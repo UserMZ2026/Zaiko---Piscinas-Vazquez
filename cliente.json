@@ -1,0 +1,111 @@
+{
+  "hotel_id": "piscinas-vazquez",
+  "hotel_name": "Piscinas Vazquez",
+  "pipeline_id": 14468572,
+  "production_enabled": true,
+  "created_at": "2026-09-24T18:44:59.216531+00:00",
+  "updated_at": "2026-09-24T23:42:40.074056+00:00",
+  "grafana_dashboard_url": null,
+  "grafana_demanda_url": "https://jadecrepe1761.grafana.net/public-dashboards/a7159e443ec644aabf3bb1392f0db8f7",
+  "grafana_gestion_url": "https://jadecrepe1761.grafana.net/public-dashboards/f9f8bf4cee6d48e6b0e6aae4daffb9ac",
+  "vertical": "piscinas",
+  "vertical_config": {
+    "fields": [
+      {
+        "key": "tipo_obra",
+        "desc": "que pidio: piscina de hormigon, jacuzzi, lago artificial, sistema de filtrado, mantenimiento o reparacion. Si pidio otro material (fibra, lona, desmontable) anotalo igual tal cual lo dijo",
+        "type": "text"
+      },
+      {
+        "key": "medidas",
+        "desc": "medida o tamano mencionado, tal cual lo dijo el cliente (ej. \"8x4\", \"6 por 3\", \"chica\")",
+        "type": "text"
+      },
+      {
+        "key": "ubicacion_obra",
+        "desc": "localidad, barrio o zona de Cordoba donde iria la obra",
+        "type": "text"
+      },
+      {
+        "key": "uso",
+        "desc": "si menciona que es para una casa particular o para un uso comercial (hotel, cabanias, club, complejo)",
+        "type": "text"
+      },
+      {
+        "key": "estado_terreno",
+        "desc": "lo que diga sobre el espacio: terreno listo, con desnivel, hay que excavar, acceso para maquinas, etc.",
+        "type": "text"
+      },
+      {
+        "key": "equipamiento_consultado",
+        "desc": "equipamiento o extras que pregunto, cada uno como string corto (purificador, skimmers, retornos orientables, hidromasaje o yacuzzi, colector de fondo, climatizacion, cobertor, iluminacion, deck, cerco, mantenimiento)",
+        "type": "array"
+      },
+      {
+        "key": "plazo_obra",
+        "desc": "plazo de obra o de entrega que se menciono",
+        "type": "text"
+      },
+      {
+        "key": "fecha_deseada",
+        "desc": "cuando la quiere lista (fecha, mes, \"para el verano\"), tal cual lo dijo",
+        "type": "text"
+      },
+      {
+        "key": "visita_o_presupuesto_pedido",
+        "desc": "si el cliente pidio una visita al lugar o un presupuesto formal",
+        "type": "boolean"
+      },
+      {
+        "key": "financiacion_mencionada",
+        "desc": "si se hablo de cuotas, plan de pago o financiacion",
+        "type": "boolean"
+      },
+      {
+        "key": "forma_pago_preferida",
+        "desc": "forma de pago que menciono el cliente (transferencia, efectivo, tarjeta, cuotas)",
+        "type": "text"
+      }
+    ],
+    "deal_noun": "venta",
+    "extra_rules": [
+      "Una venta solo se marca como confirmada si hay evidencia explicita (sena o anticipo pagado, fecha de obra acordada, contrato cerrado). Que el cliente haya pedido precio NO es una venta.",
+      "No confundas que la empresa mando un presupuesto con que el cliente lo acepto.",
+      "La empresa construye en hormigon armado vibrado in situ: no ofrece piscinas de fibra de vidrio, de lona ni desmontables. Si el cliente pregunta por esos materiales, registralo en tipo_obra tal cual lo pidio, sin asumir que la empresa los vende.",
+      "No penalices al vendedor por no mencionar informacion que no era relevante para esa consulta."
+    ],
+    "auditor_role": "una empresa que construye piscinas de hormigon armado a medida, y que ademas hace jacuzzis, lagos artificiales, sistemas de filtrado y mantenimiento",
+    "client_label": "CLIENTE",
+    "business_label": "EMPRESA",
+    "prompt_version": "PISCINAS_AUDIT_V4"
+  },
+  "default_currency": null,
+  "business_timezone": "America/Argentina/Buenos_Aires",
+  "business_hours": {
+    "1": [
+      "09:00",
+      "18:00"
+    ],
+    "2": [
+      "09:00",
+      "18:00"
+    ],
+    "3": [
+      "09:00",
+      "18:00"
+    ],
+    "4": [
+      "09:00",
+      "18:00"
+    ],
+    "5": [
+      "09:00",
+      "18:00"
+    ],
+    "6": [
+      "10:00",
+      "15:00"
+    ]
+  },
+  "response_sla_minutes": 30
+}

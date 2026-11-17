@@ -1,0 +1,1941 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "description": "Que piden los clientes de Piscinas Vazquez, leido por la IA de las conversaciones de WhatsApp. Los campos del rubro salen de wa_conversation_audits.vertical_data (ver 10_migracion_multi_vertical.sql). Todos los paneles respetan el periodo elegido arriba a la derecha: una conversacion cuenta en el periodo en que el cliente escribio por primera vez.",
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": 6838894137344,
+  "liveNow": false,
+  "panels": [
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 236,
+      "title": "Volumen",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "bfz14hr25v6kgd"
+      },
+      "description": "Conversaciones con al menos una auditoria de IA generada, de Piscinas Vazquez. Fuente: wa_conversation_audits.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "#3987e5",
+            "mode": "fixed"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
+          },
+          "unit": "none"
+        }
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 6,
+        "x": 0,
+        "y": 1
+      },
+      "id": 202,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "bfz14hr25v6kgd"
+          },
+          "format": "table",
+          "rawSql": "select count(*) as v from wa_latest_audits a join wa_talks t on t.talk_id=a.talk_id where ('piscinas-vazquez' = '__all__' OR t.hotel_id = 'piscinas-vazquez') and coalesce((select min(m0.message_created_at) from wa_messages m0 where m0.talk_id=t.talk_id and m0.direction='incoming'), t.first_seen_at) between $__timeFrom() and $__timeTo()",
+          "refId": "A"
+        }
+      ],
+      "title": "Conversaciones analizadas",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "bfz14hr25v6kgd"
+      },
+      "description": "Conversaciones en las que la IA pudo leer tipo de obra. Leido por la IA del texto de la conversacion, nunca inventado: si no se menciona queda vacio. Fuente: wa_conversation_audits.vertical_data.->>'tipo_obra'.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "#3987e5",
+            "mode": "fixed"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
+          },
+          "unit": "none"
+        }
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 6,
+        "x": 6,
+        "y": 1
+      },
+      "id": 203,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "bfz14hr25v6kgd"
+          },
+          "format": "table",
+          "rawSql": "select count(*) as v\nfrom wa_latest_audits a join wa_talks t on t.talk_id=a.talk_id\nwhere ('piscinas-vazquez' = '__all__' OR t.hotel_id = 'piscinas-vazquez') and coalesce((select min(m0.message_created_at) from wa_messages m0 where m0.talk_id=t.talk_id and m0.direction='incoming'), t.first_seen_at) between $__timeFrom() and $__timeTo() and coalesce(a.vertical_data->>'tipo_obra','') <> ''",
+          "refId": "A"
+        }
+      ],
+      "title": "Con tipo de obra identificado",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "bfz14hr25v6kgd"
+      },
+      "description": "Conversaciones donde la empresa mando un precio. Fuente: wa_conversation_audits.quoted_price.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "#3987e5",
+            "mode": "fixed"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
+          },
+          "unit": "locale"
+        }
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 6,
+        "x": 12,
+        "y": 1
+      },
+      "id": 204,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "bfz14hr25v6kgd"
+          },
+          "format": "table",
+          "rawSql": "select count(*) as v\nfrom wa_latest_audits a join wa_talks t on t.talk_id=a.talk_id\nwhere ('piscinas-vazquez' = '__all__' OR t.hotel_id = 'piscinas-vazquez') and coalesce((select min(m0.message_created_at) from wa_messages m0 where m0.talk_id=t.talk_id and m0.direction='incoming'), t.first_seen_at) between $__timeFrom() and $__timeTo() and a.quoted_price is not null",
+          "refId": "A"
+        }
+      ],
+      "title": "Con precio cotizado",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "bfz14hr25v6kgd"
+      },
+      "description": "Conversaciones donde el cliente dijo cuanto queria gastar (distinto de lo cotizado). Fuente: wa_conversation_audits.guest_budget_mentioned.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "#3987e5",
+            "mode": "fixed"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
+          },
+          "unit": "locale"
+        }
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 6,
+        "x": 18,
+        "y": 1
+      },
+      "id": 205,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "bfz14hr25v6kgd"
+          },
+          "format": "table",
+          "rawSql": "select count(*) as v\nfrom wa_latest_audits a join wa_talks t on t.talk_id=a.talk_id\nwhere ('piscinas-vazquez' = '__all__' OR t.hotel_id = 'piscinas-vazquez') and coalesce((select min(m0.message_created_at) from wa_messages m0 where m0.talk_id=t.talk_id and m0.direction='incoming'), t.first_seen_at) between $__timeFrom() and $__timeTo() and a.guest_budget_mentioned is true",
+          "refId": "A"
+        }
+      ],
+      "title": "Con presupuesto del cliente",
+      "type": "stat"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 7
+      },
+      "id": 237,
+      "title": "Que pide el cliente (leido por la IA)",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "bfz14hr25v6kgd"
+      },
+      "description": "Que tipo de obra pide el cliente, segun lo que leyo la IA (agrupando como lo escribio). Fuente: vertical_data->>'tipo_obra'.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "#8f3bb8",
+            "mode": "fixed"
+          },
+          "custom": {
+            "axisPlacement": "auto",
+            "axisSoftMin": 0,
+            "fillOpacity": 85,
+            "gradientMode": "none",
+            "lineWidth": 0
+          },
+          "decimals": 0,
+          "min": 0,
+          "unit": "none"
+        }
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 9,
+        "x": 0,
+        "y": 8
+      },
+      "id": 207,
+      "options": {
+        "barWidth": 0.7,
+        "groupWidth": 0.7,
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "orientation": "horizontal",
+        "showValue": "always",
+        "stacking": "none",
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        },
+        "xTickLabelMaxLength": 0,
+        "xTickLabelRotation": 0
+      },
+      "pluginVersion": "",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "bfz14hr25v6kgd"
+          },
+          "format": "table",
+          "rawSql": "select tipo as \"Tipo de obra\", count(*) as \"Conversaciones\" from (select case when lower(translate(coalesce(nullif(trim(a.vertical_data->>'tipo_obra'),''), 'zznodijo'), 'áéíóúÁÉÍÓÚñÑüÜ', 'aeiouAEIOUnNuU')) ~ '^zznodijo$' then 'No lo dijo' when lower(translate(coalesce(nullif(trim(a.vertical_data->>'tipo_obra'),''), 'zznodijo'), 'áéíóúÁÉÍÓÚñÑüÜ', 'aeiouAEIOUnNuU')) ~ 'fibra' then 'Piscina de fibra' when lower(translate(coalesce(nullif(trim(a.vertical_data->>'tipo_obra'),''), 'zznodijo'), 'áéíóúÁÉÍÓÚñÑüÜ', 'aeiouAEIOUnNuU')) ~ 'reparac|revestir|ampliac|cascada|arreglo' then 'Reparación o mejora' when lower(translate(coalesce(nullif(trim(a.vertical_data->>'tipo_obra'),''), 'zznodijo'), 'áéíóúÁÉÍÓÚñÑüÜ', 'aeiouAEIOUnNuU')) ~ 'hormigon|material|cemento' then 'Piscina de hormigón' when lower(translate(coalesce(nullif(trim(a.vertical_data->>'tipo_obra'),''), 'zznodijo'), 'áéíóúÁÉÍÓÚñÑüÜ', 'aeiouAEIOUnNuU')) ~ 'pileta|piscina' then 'Piscina (sin detalle)' else 'Otro' end as tipo from wa_latest_audits a join wa_talks t on t.talk_id=a.talk_id where ('piscinas-vazquez' = '__all__' OR t.hotel_id = 'piscinas-vazquez') and coalesce((select min(m0.message_created_at) from wa_messages m0 where m0.talk_id=t.talk_id and m0.direction='incoming'), t.first_seen_at) between $__timeFrom() and $__timeTo()) x\ngroup by 1 order by (tipo = 'No lo dijo'), 2 desc",
+          "refId": "A"
+        }
+      ],
+      "title": "Tipo de obra consultado",
+      "type": "barchart"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "bfz14hr25v6kgd"
+      },
+      "description": "Largo de la piscina que pidio el cliente (la medida mas grande que escribio: 7x3 = 7 m), solo donde la dijo. 'Medida no clara' = la escribio de una forma que no se puede leer como numero (ej. 'cinco x tres'). Fuente: vertical_data->>'medidas'.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "#1f9e89",
+            "mode": "fixed"
+          },
+          "custom": {
+            "axisPlacement": "auto",
+            "axisSoftMin": 0,
+            "fillOpacity": 85,
+            "gradientMode": "none",
+            "lineWidth": 0
+          },
+          "decimals": 0,
+          "min": 0,
+          "unit": "none"
+        }
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 9,
+        "x": 9,
+        "y": 8
+      },
+      "id": 208,
+      "options": {
+        "barWidth": 0.7,
+        "groupWidth": 0.7,
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "orientation": "vertical",
+        "showValue": "always",
+        "stacking": "none",
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        },
+        "xTickLabelMaxLength": 24,
+        "xTickLabelRotation": 0
+      },
+      "pluginVersion": "",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "bfz14hr25v6kgd"
+          },
+          "format": "table",
+          "rawSql": "select r.label as \"Largo pedido\", count(x.talk_id) as \"Conversaciones\"\nfrom (values (1,'Hasta 5 m'),(2,'6 m'),(3,'7 m'),(4,'8 m'),(5,'Mas de 8 m'),(6,'Medida no clara')) r(ord,label)\nleft join (select t.talk_id, case when l is null then 6 when l <= 5.5 then 1 when l <= 6.5 then 2 when l <= 7.5 then 3 when l <= 8.5 then 4 else 5 end as ord\n  from (select t.talk_id, greatest(replace((regexp_match(lower(a.vertical_data->>'medidas'), '(\\d+(?:[.,]\\d+)?)\\s*(?:x|por|×|\\*)\\s*(\\d+(?:[.,]\\d+)?)'))[1], ',', '.')::numeric, replace((regexp_match(lower(a.vertical_data->>'medidas'), '(\\d+(?:[.,]\\d+)?)\\s*(?:x|por|×|\\*)\\s*(\\d+(?:[.,]\\d+)?)'))[2], ',', '.')::numeric, replace((regexp_match(lower(a.vertical_data->>'medidas'), '(\\d+(?:[.,]\\d+)?)\\s*(?:m\\M|mts|metros)'))[1], ',', '.')::numeric) as l from wa_latest_audits a join wa_talks t on t.talk_id=a.talk_id where ('piscinas-vazquez' = '__all__' OR t.hotel_id = 'piscinas-vazquez') and coalesce((select min(m0.message_created_at) from wa_messages m0 where m0.talk_id=t.talk_id and m0.direction='incoming'), t.first_seen_at) between $__timeFrom() and $__timeTo() and nullif(trim(a.vertical_data->>'medidas'),'') is not null) t) x on x.ord = r.ord\ngroup by r.ord, r.label order by r.ord",
+          "refId": "A"
+        }
+      ],
+      "title": "Que tamaño de piscina piden",
+      "type": "barchart"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "bfz14hr25v6kgd"
+      },
+      "description": "Nivel de interes de comprar que la IA detecto en el cliente (bajo/medio/alto/unknown), leyendo el texto de la conversacion. Fuente: wa_conversation_audits.intent_level.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "#898781",
+            "mode": "fixed"
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "alto"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "#9ec5f4",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "medio"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "#3987e5",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "bajo"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "#1c5cab",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "unknown"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "#898781",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 6,
+        "x": 18,
+        "y": 8
+      },
+      "id": 209,
+      "options": {
+        "displayLabels": [
+          "percent"
+        ],
+        "legend": {
+          "displayMode": "table",
+          "placement": "right",
+          "showLegend": true,
+          "values": [
+            "value"
+          ]
+        },
+        "pieType": "donut",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "bfz14hr25v6kgd"
+          },
+          "format": "table",
+          "rawSql": "select case lower(coalesce(a.intent_level,'')) when 'alto' then 'alto' when 'high' then 'alto' when 'medio' then 'medio' when 'medium' then 'medio' when 'bajo' then 'bajo' when 'low' then 'bajo' else 'unknown' end as intencion, count(*) as v from wa_latest_audits a join wa_talks t on t.talk_id=a.talk_id where ('piscinas-vazquez' = '__all__' OR t.hotel_id = 'piscinas-vazquez') and coalesce((select min(m0.message_created_at) from wa_messages m0 where m0.talk_id=t.talk_id and m0.direction='incoming'), t.first_seen_at) between $__timeFrom() and $__timeTo() group by 1 order by 2 desc",
+          "refId": "A"
+        }
+      ],
+      "title": "Nivel de intencion del cliente",
+      "type": "piechart"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 17
+      },
+      "id": 238,
+      "title": "Condiciones que se hablaron",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "bfz14hr25v6kgd"
+      },
+      "description": "% de conversaciones donde se hablo de cada tema. Leido por la IA del texto de la conversacion, nunca inventado: si no se menciona cuenta como no mencionado. Fuente: wa_conversation_audits (campos *_mencionado/a y vertical_data).",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "#3987e5",
+            "mode": "fixed"
+          },
+          "custom": {
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "fillOpacity": 85,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineWidth": 1
+          },
+          "decimals": 1,
+          "min": 0,
+          "unit": "percent"
+        }
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 24,
+        "x": 0,
+        "y": 18
+      },
+      "id": 211,
+      "options": {
+        "barRadius": 0.15,
+        "barWidth": 0.7,
+        "fullHighlight": false,
+        "groupWidth": 0.7,
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "orientation": "horizontal",
+        "showValue": "always",
+        "stacking": "none",
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        },
+        "xField": "Condicion",
+        "xTickLabelRotation": 0
+      },
+      "pluginVersion": "",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "bfz14hr25v6kgd"
+          },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "select * from (\nselect 'Pidio visita' as \"Condicion\", (select round(100.0*count(*) filter (where lower(coalesce(a.vertical_data->>'visita_o_presupuesto_pedido','')) in ('true','t','1','si','yes'))/nullif(count(*),0),1) as v\nfrom wa_latest_audits a join wa_talks t on t.talk_id=a.talk_id\nwhere ('piscinas-vazquez' = '__all__' OR t.hotel_id = 'piscinas-vazquez') and coalesce((select min(m0.message_created_at) from wa_messages m0 where m0.talk_id=t.talk_id and m0.direction='incoming'), t.first_seen_at) between $__timeFrom() and $__timeTo()) as \"% de conversaciones\"\nunion all\nselect 'Financiacion' as \"Condicion\", (select round(100.0*count(*) filter (where lower(coalesce(a.vertical_data->>'financiacion_mencionada','')) in ('true','t','1','si','yes'))/nullif(count(*),0),1) as v\nfrom wa_latest_audits a join wa_talks t on t.talk_id=a.talk_id\nwhere ('piscinas-vazquez' = '__all__' OR t.hotel_id = 'piscinas-vazquez') and coalesce((select min(m0.message_created_at) from wa_messages m0 where m0.talk_id=t.talk_id and m0.direction='incoming'), t.first_seen_at) between $__timeFrom() and $__timeTo()) as \"% de conversaciones\"\nunion all\nselect 'Disponibilidad' as \"Condicion\", (select round(100.0*count(*) filter (where a.availability_mentioned)/nullif(count(*),0),1) as v from wa_latest_audits a join wa_talks t on t.talk_id=a.talk_id where ('piscinas-vazquez' = '__all__' OR t.hotel_id = 'piscinas-vazquez') and coalesce((select min(m0.message_created_at) from wa_messages m0 where m0.talk_id=t.talk_id and m0.direction='incoming'), t.first_seen_at) between $__timeFrom() and $__timeTo()) as \"% de conversaciones\"\nunion all\nselect 'Metodo de pago' as \"Condicion\", (select round(100.0*count(*) filter (where a.payment_method_mentioned)/nullif(count(*),0),1) as v from wa_latest_audits a join wa_talks t on t.talk_id=a.talk_id where ('piscinas-vazquez' = '__all__' OR t.hotel_id = 'piscinas-vazquez') and coalesce((select min(m0.message_created_at) from wa_messages m0 where m0.talk_id=t.talk_id and m0.direction='incoming'), t.first_seen_at) between $__timeFrom() and $__timeTo()) as \"% de conversaciones\"\nunion all\nselect 'Politica cancel.' as \"Condicion\", (select round(100.0*count(*) filter (where a.cancellation_policy_mentioned)/nullif(count(*),0),1) as v from wa_latest_audits a join wa_talks t on t.talk_id=a.talk_id where ('piscinas-vazquez' = '__all__' OR t.hotel_id = 'piscinas-vazquez') and coalesce((select min(m0.message_created_at) from wa_messages m0 where m0.talk_id=t.talk_id and m0.direction='incoming'), t.first_seen_at) between $__timeFrom() and $__timeTo()) as \"% de conversaciones\"\n) x order by 2 desc nulls last",
+          "refId": "A"
+        }
+      ],
+      "title": "Condiciones que se hablaron (% de conversaciones)",
+      "type": "barchart"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 25
+      },
+      "id": 239,
+      "title": "Detalle por conversacion",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "bfz14hr25v6kgd"
+      },
+      "description": "Una fila por conversacion con todo lo que la IA pudo leer del pedido, mas intencion, estado y resumen. Leido por la IA del texto de la conversacion, nunca inventado: si no se menciona queda vacio. Fuente: wa_conversation_audits.vertical_data. El resumen se ve en una linea: pasando el mouse por la celda aparece el icono para leerlo completo.",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto",
+              "wrapText": false
+            },
+            "filterable": false,
+            "inspect": true
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Estado"
+            },
+            "properties": [
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "color-text"
+                }
+              },
+              {
+                "id": "custom.width",
+                "value": 125
+              },
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "options": {
+                      "confirmada": {
+                        "color": "#56a64b",
+                        "index": 0,
+                        "text": "Confirmada"
+                      }
+                    },
+                    "type": "value"
+                  },
+                  {
+                    "options": {
+                      "en_negociacion": {
+                        "color": "#fade2a",
+                        "index": 1,
+                        "text": "En negociacion"
+                      }
+                    },
+                    "type": "value"
+                  },
+                  {
+                    "options": {
+                      "sin_avance": {
+                        "color": "#ff9830",
+                        "index": 2,
+                        "text": "Sin avance"
+                      }
+                    },
+                    "type": "value"
+                  },
+                  {
+                    "options": {
+                      "perdida": {
+                        "color": "#e02f44",
+                        "index": 3,
+                        "text": "Perdida"
+                      }
+                    },
+                    "type": "value"
+                  },
+                  {
+                    "options": {
+                      "cancelada": {
+                        "color": "#e02f44",
+                        "index": 4,
+                        "text": "Cancelada"
+                      }
+                    },
+                    "type": "value"
+                  },
+                  {
+                    "options": {
+                      "unknown": {
+                        "color": "#8e8e8e",
+                        "index": 5,
+                        "text": "Sin clasificar"
+                      }
+                    },
+                    "type": "value"
+                  },
+                  {
+                    "options": {
+                      "no_aplica": {
+                        "color": "#8e8e8e",
+                        "index": 6,
+                        "text": "No aplica"
+                      }
+                    },
+                    "type": "value"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Intencion"
+            },
+            "properties": [
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "color-text"
+                }
+              },
+              {
+                "id": "custom.width",
+                "value": 85
+              },
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "options": {
+                      "alto": {
+                        "color": "#56a64b",
+                        "index": 0,
+                        "text": "Alta"
+                      }
+                    },
+                    "type": "value"
+                  },
+                  {
+                    "options": {
+                      "medio": {
+                        "color": "#fade2a",
+                        "index": 1,
+                        "text": "Media"
+                      }
+                    },
+                    "type": "value"
+                  },
+                  {
+                    "options": {
+                      "bajo": {
+                        "color": "#ff9830",
+                        "index": 2,
+                        "text": "Baja"
+                      }
+                    },
+                    "type": "value"
+                  },
+                  {
+                    "options": {
+                      "unknown": {
+                        "color": "#8e8e8e",
+                        "index": 3,
+                        "text": "-"
+                      }
+                    },
+                    "type": "value"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Talk"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 60
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Cliente"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 140
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Tipo de obra"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 140
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Medida"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 100
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Zona de la obra"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 150
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Uso"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 110
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Estado del terreno"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 130
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Plazo de obra"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 100
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "La quiere para"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 100
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Forma de pago"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 120
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Resumen"
+            },
+            "properties": [
+              {
+                "id": "custom.minWidth",
+                "value": 400
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 11,
+        "w": 24,
+        "x": 0,
+        "y": 26
+      },
+      "id": 217,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "show": false
+        },
+        "showHeader": true
+      },
+      "pluginVersion": "",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "bfz14hr25v6kgd"
+          },
+          "format": "table",
+          "rawSql": "select\n  t.talk_id as \"Talk\",\n  coalesce(a.guest_name,'(sin nombre)') as \"Cliente\",\n  coalesce(a.vertical_data->>'tipo_obra','-') as \"Tipo de obra\",\n  coalesce(a.vertical_data->>'medidas','-') as \"Medida\",\n  coalesce(a.vertical_data->>'ubicacion_obra','-') as \"Zona de la obra\",\n  coalesce(a.vertical_data->>'uso','-') as \"Uso\",\n  coalesce(a.vertical_data->>'estado_terreno','-') as \"Estado del terreno\",\n  coalesce(a.vertical_data->>'plazo_obra','-') as \"Plazo de obra\",\n  coalesce(a.vertical_data->>'fecha_deseada','-') as \"La quiere para\",\n  coalesce(a.vertical_data->>'forma_pago_preferida','-') as \"Forma de pago\",\n  coalesce(a.intent_level,'unknown') as \"Intencion\",\n  coalesce(a.reservation_status,'unknown') as \"Estado\",\n  a.summary as \"Resumen\"\nfrom wa_latest_audits a join wa_talks t on t.talk_id=a.talk_id\nwhere ('piscinas-vazquez' = '__all__' OR t.hotel_id = 'piscinas-vazquez') and coalesce((select min(m0.message_created_at) from wa_messages m0 where m0.talk_id=t.talk_id and m0.direction='incoming'), t.first_seen_at) between $__timeFrom() and $__timeTo()\norder by a.created_at desc limit 50",
+          "refId": "A"
+        }
+      ],
+      "title": "Ficha completa por conversacion",
+      "type": "table"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 37
+      },
+      "id": 240,
+      "title": "De donde escriben (por telefono del cliente)",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "bfz14hr25v6kgd"
+      },
+      "description": "Provincia (Argentina) o pais deducidos del numero de telefono del contacto en Kommo (GET /api/v4/contacts/{id}), resuelto UNA sola vez por conversacion y cacheado. El mapeo de prefijo->provincia es best-effort: cubre capitales de provincia y ciudades grandes, no los ~700 codigos de area del interior -- un prefijo no mapeado cae en '(sin resolver)'. Fuente: wa_talks.phone_province / phone_country.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "unit": "none"
+        }
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 10,
+        "x": 0,
+        "y": 38
+      },
+      "id": 219,
+      "options": {
+        "displayLabels": [
+          "percent"
+        ],
+        "legend": {
+          "displayMode": "table",
+          "placement": "right",
+          "showLegend": true,
+          "values": [
+            "value"
+          ]
+        },
+        "pieType": "donut",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "bfz14hr25v6kgd"
+          },
+          "format": "table",
+          "rawSql": "select coalesce(t.phone_province, case when t.phone_country is not null and t.phone_country <> 'Argentina' then t.phone_country else '(sin resolver)' end) as origen, count(*) as v\nfrom wa_talks t\nwhere ('piscinas-vazquez' = '__all__' OR t.hotel_id = 'piscinas-vazquez') and coalesce((select min(m0.message_created_at) from wa_messages m0 where m0.talk_id=t.talk_id and m0.direction='incoming'), t.first_seen_at) between $__timeFrom() and $__timeTo()\ngroup by 1\norder by 2 desc",
+          "refId": "A"
+        }
+      ],
+      "title": "Distribucion por provincia / pais",
+      "type": "piechart"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "bfz14hr25v6kgd"
+      },
+      "description": "Localidad (y provincia) del telefono del cliente. Las 15 con mas conversaciones. Fuente: wa_talks.phone_locality / phone_province / phone_country.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "#1f9e89",
+            "mode": "fixed"
+          },
+          "custom": {
+            "axisPlacement": "auto",
+            "axisSoftMin": 0,
+            "fillOpacity": 85,
+            "gradientMode": "none",
+            "lineWidth": 0
+          },
+          "decimals": 0,
+          "min": 0,
+          "unit": "none"
+        }
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 14,
+        "x": 10,
+        "y": 38
+      },
+      "id": 220,
+      "options": {
+        "barWidth": 0.7,
+        "groupWidth": 0.7,
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "orientation": "horizontal",
+        "showValue": "always",
+        "stacking": "none",
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        },
+        "xTickLabelMaxLength": 0,
+        "xTickLabelRotation": 0
+      },
+      "pluginVersion": "",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "bfz14hr25v6kgd"
+          },
+          "format": "table",
+          "rawSql": "select case when t.phone_country is null then '(sin resolver)' when t.phone_country <> 'Argentina' then t.phone_country else coalesce(nullif(t.phone_locality,''), nullif(t.phone_province,''), 'Argentina (sin localidad)') || coalesce(' (' || nullif(t.phone_province,'') || ')', '') end as \"Desde donde escriben\",\ncount(*) as \"Conversaciones\"\nfrom wa_talks t where ('piscinas-vazquez' = '__all__' OR t.hotel_id = 'piscinas-vazquez') and coalesce((select min(m0.message_created_at) from wa_messages m0 where m0.talk_id=t.talk_id and m0.direction='incoming'), t.first_seen_at) between $__timeFrom() and $__timeTo()\ngroup by 1 order by 2 desc, 1 limit 15",
+          "refId": "A"
+        }
+      ],
+      "title": "Localidades desde donde escriben",
+      "type": "barchart"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 47
+      },
+      "id": 241,
+      "title": "Pedidos y preguntas frecuentes (leido por la IA)",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "bfz14hr25v6kgd"
+      },
+      "description": "Equipamiento y extras que pregunto el cliente, agrupados (skimmer, filtro y bomba, losetas...). Junta las dos listas que arma la IA y cuenta conversaciones, sin repetir.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "#3987e5",
+            "mode": "fixed"
+          },
+          "custom": {
+            "axisPlacement": "auto",
+            "axisSoftMin": 0,
+            "fillOpacity": 85,
+            "gradientMode": "none",
+            "lineWidth": 0
+          },
+          "decimals": 0,
+          "min": 0,
+          "unit": "none"
+        }
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 8,
+        "x": 0,
+        "y": 48
+      },
+      "id": 222,
+      "options": {
+        "barWidth": 0.7,
+        "groupWidth": 0.7,
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "orientation": "horizontal",
+        "showValue": "always",
+        "stacking": "none",
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        },
+        "xTickLabelMaxLength": 0,
+        "xTickLabelRotation": 0
+      },
+      "pluginVersion": "",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "bfz14hr25v6kgd"
+          },
+          "format": "table",
+          "rawSql": "select cat as \"Equipamiento\", count(distinct talk_id) as \"Conversaciones\" from (select talk_id, case when lower(translate(s, 'áéíóúÁÉÍÓÚñÑüÜ', 'aeiouAEIOUnNuU')) ~ 'esquimer|skimmer|esquimmer' then 'Skimmer' when lower(translate(s, 'áéíóúÁÉÍÓÚñÑüÜ', 'aeiouAEIOUnNuU')) ~ 'filtro|bomba' then 'Filtro y bomba' when lower(translate(s, 'áéíóúÁÉÍÓÚñÑüÜ', 'aeiouAEIOUnNuU')) ~ 'roceta|loseta|termic|borde' then 'Losetas / borde térmico' when lower(translate(s, 'áéíóúÁÉÍÓÚñÑüÜ', 'aeiouAEIOUnNuU')) ~ 'ilumin|luces|luz' then 'Iluminación' when lower(translate(s, 'áéíóúÁÉÍÓÚñÑüÜ', 'aeiouAEIOUnNuU')) ~ 'solarium|solar' then 'Solárium' when lower(translate(s, 'áéíóúÁÉÍÓÚñÑüÜ', 'aeiouAEIOUnNuU')) ~ 'climat|calef|calent' then 'Climatización' when lower(translate(s, 'áéíóúÁÉÍÓÚñÑüÜ', 'aeiouAEIOUnNuU')) ~ 'purific|clor|sal ' then 'Purificador / cloración' when lower(translate(s, 'áéíóúÁÉÍÓÚñÑüÜ', 'aeiouAEIOUnNuU')) ~ 'cascada|desborde|infinito' then 'Cascada / desborde infinito' when lower(translate(s, 'áéíóúÁÉÍÓÚñÑüÜ', 'aeiouAEIOUnNuU')) ~ 'hidromasaje|jacuzzi' then 'Hidromasaje / jacuzzi' when lower(translate(s, 'áéíóúÁÉÍÓÚñÑüÜ', 'aeiouAEIOUnNuU')) ~ 'retorno|escalera' then 'Retornos y escalera' when lower(translate(s, 'áéíóúÁÉÍÓÚñÑüÜ', 'aeiouAEIOUnNuU')) ~ 'revestim|venecita|ceramic|piedra' then 'Revestimiento' else 'zz' end as cat from (\n  select t.talk_id, case jsonb_typeof(x) when 'object' then coalesce(x->>'item', x->>'name', x #>> '{}') else x #>> '{}' end as s from wa_latest_audits a join wa_talks t on t.talk_id=a.talk_id, jsonb_array_elements(case when jsonb_typeof(a.vertical_data->'equipamiento_consultado')='array' then a.vertical_data->'equipamiento_consultado' else '[]'::jsonb end) x where ('piscinas-vazquez' = '__all__' OR t.hotel_id = 'piscinas-vazquez') and coalesce((select min(m0.message_created_at) from wa_messages m0 where m0.talk_id=t.talk_id and m0.direction='incoming'), t.first_seen_at) between $__timeFrom() and $__timeTo()\n  union all\n  select t.talk_id, case jsonb_typeof(x) when 'object' then coalesce(x->>'service', x->>'name', x #>> '{}') else x #>> '{}' end as s from wa_latest_audits a join wa_talks t on t.talk_id=a.talk_id, jsonb_array_elements(coalesce(a.services_requested,'[]'::jsonb)) x where ('piscinas-vazquez' = '__all__' OR t.hotel_id = 'piscinas-vazquez') and coalesce((select min(m0.message_created_at) from wa_messages m0 where m0.talk_id=t.talk_id and m0.direction='incoming'), t.first_seen_at) between $__timeFrom() and $__timeTo()\n) u) y\nwhere cat <> 'zz' group by 1 order by 2 desc, 1",
+          "refId": "A"
+        }
+      ],
+      "title": "Equipamiento que consultan",
+      "type": "barchart"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "bfz14hr25v6kgd"
+      },
+      "description": "Servicios que pidio el cliente aparte de cotizar la piscina: visita tecnica, financiacion, mano de obra, reparaciones. Cuenta conversaciones. Fuente: services_requested y equipamiento_consultado.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "#e0752d",
+            "mode": "fixed"
+          },
+          "custom": {
+            "axisPlacement": "auto",
+            "axisSoftMin": 0,
+            "fillOpacity": 85,
+            "gradientMode": "none",
+            "lineWidth": 0
+          },
+          "decimals": 0,
+          "min": 0,
+          "unit": "none"
+        }
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 8,
+        "x": 8,
+        "y": 48
+      },
+      "id": 223,
+      "options": {
+        "barWidth": 0.7,
+        "groupWidth": 0.7,
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "orientation": "horizontal",
+        "showValue": "always",
+        "stacking": "none",
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        },
+        "xTickLabelMaxLength": 0,
+        "xTickLabelRotation": 0
+      },
+      "pluginVersion": "",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "bfz14hr25v6kgd"
+          },
+          "format": "table",
+          "rawSql": "select cat as \"Servicio\", count(distinct talk_id) as \"Conversaciones\" from (select talk_id, case when lower(translate(s, 'áéíóúÁÉÍÓÚñÑüÜ', 'aeiouAEIOUnNuU')) ~ 'visita' then 'Visita técnica' when lower(translate(s, 'áéíóúÁÉÍÓÚñÑüÜ', 'aeiouAEIOUnNuU')) ~ 'financ|pago|cuota|tarjeta' then 'Financiación y formas de pago' when lower(translate(s, 'áéíóúÁÉÍÓÚñÑüÜ', 'aeiouAEIOUnNuU')) ~ 'mano de obra|coloca|instalac' then 'Mano de obra / colocación' when lower(translate(s, 'áéíóúÁÉÍÓÚñÑüÜ', 'aeiouAEIOUnNuU')) ~ 'reparac|arreglo|pintura|pintar' then 'Reparación o arreglo' when lower(translate(s, 'áéíóúÁÉÍÓÚñÑüÜ', 'aeiouAEIOUnNuU')) ~ 'mantenim|limpieza' then 'Mantenimiento' when lower(translate(s, 'áéíóúÁÉÍÓÚñÑüÜ', 'aeiouAEIOUnNuU')) ~ 'excava|tierra|arena|movimiento' then 'Movimiento de tierra / excavación' else 'zz' end as cat from (\n  select t.talk_id, case jsonb_typeof(x) when 'object' then coalesce(x->>'item', x->>'name', x #>> '{}') else x #>> '{}' end as s from wa_latest_audits a join wa_talks t on t.talk_id=a.talk_id, jsonb_array_elements(case when jsonb_typeof(a.vertical_data->'equipamiento_consultado')='array' then a.vertical_data->'equipamiento_consultado' else '[]'::jsonb end) x where ('piscinas-vazquez' = '__all__' OR t.hotel_id = 'piscinas-vazquez') and coalesce((select min(m0.message_created_at) from wa_messages m0 where m0.talk_id=t.talk_id and m0.direction='incoming'), t.first_seen_at) between $__timeFrom() and $__timeTo()\n  union all\n  select t.talk_id, case jsonb_typeof(x) when 'object' then coalesce(x->>'service', x->>'name', x #>> '{}') else x #>> '{}' end as s from wa_latest_audits a join wa_talks t on t.talk_id=a.talk_id, jsonb_array_elements(coalesce(a.services_requested,'[]'::jsonb)) x where ('piscinas-vazquez' = '__all__' OR t.hotel_id = 'piscinas-vazquez') and coalesce((select min(m0.message_created_at) from wa_messages m0 where m0.talk_id=t.talk_id and m0.direction='incoming'), t.first_seen_at) between $__timeFrom() and $__timeTo()\n) u) y\nwhere cat <> 'zz' group by 1 order by 2 desc, 1",
+          "refId": "A"
+        }
+      ],
+      "title": "Que servicios piden (ademas de la piscina)",
+      "type": "barchart"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "bfz14hr25v6kgd"
+      },
+      "description": "Preguntas que escribio el cliente, agrupadas por tema. Verde = se respondio; rojo = quedo sin respuesta. Entre parentesis, el total. Fuente: unanswered_questions (solo las que la IA atribuye al cliente).",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "#3987e5",
+            "mode": "fixed"
+          },
+          "custom": {
+            "axisPlacement": "auto",
+            "axisSoftMin": 0,
+            "fillOpacity": 85,
+            "gradientMode": "none",
+            "lineWidth": 0
+          },
+          "decimals": 0,
+          "min": 0,
+          "unit": "none"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Respondidas"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "#56a64b",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Sin responder"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "#e02f44",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 8,
+        "x": 16,
+        "y": 48
+      },
+      "id": 224,
+      "options": {
+        "barWidth": 0.7,
+        "groupWidth": 0.7,
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "orientation": "horizontal",
+        "showValue": "never",
+        "stacking": "normal",
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        },
+        "xTickLabelMaxLength": 0,
+        "xTickLabelRotation": 0
+      },
+      "pluginVersion": "",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "bfz14hr25v6kgd"
+          },
+          "format": "table",
+          "rawSql": "select tema || '  (' || count(*) || ')' as \"Tema\", nullif(count(*) filter (where respondida), 0) as \"Respondidas\", nullif(count(*) filter (where not respondida), 0) as \"Sin responder\" from (\nselect case when lower(translate(q->>'question', 'áéíóúÁÉÍÓÚñÑüÜ', 'aeiouAEIOUnNuU')) ~ 'pago|financ|tarjeta|efectivo' then 'Formas de pago y financiación' when lower(translate(q->>'question', 'áéíóúÁÉÍÓÚñÑüÜ', 'aeiouAEIOUnNuU')) ~ 'garantia|incluye|instalada|colocacion|mano de obra|arreglos|yo tengo el material|dentro del precio|proyecto completo' then 'Garantía y qué incluye' when lower(translate(q->>'question', 'áéíóúÁÉÍÓÚñÑüÜ', 'aeiouAEIOUnNuU')) ~ 'precio|cuanto|costo|sale |saldria|presupuesto|cotizar|promo|valor' then 'Precio y presupuesto' when lower(translate(q->>'question', 'áéíóúÁÉÍÓÚñÑüÜ', 'aeiouAEIOUnNuU')) ~ 'medida|modelo|tamano|profundidad|fibra|\\d x \\d|mas chica|grande|dimensiones' then 'Modelos y medidas' when lower(translate(q->>'question', 'áéíóúÁÉÍÓÚñÑüÜ', 'aeiouAEIOUnNuU')) ~ 'revestimiento|piedra|venecita|ceramic|hormigon|cemento|material|especificaciones|venden|luces|sala de maquinas|caneria|cascada|solarium|pintura' then 'Materiales y terminaciones' when lower(translate(q->>'question', 'áéíóúÁÉÍÓÚñÑüÜ', 'aeiouAEIOUnNuU')) ~ 'provincia|carlos paz|villa maria|interior|donde son|lugar|de donde|santiago' then 'Zona donde trabajan' when lower(translate(q->>'question', 'áéíóúÁÉÍÓÚñÑüÜ', 'aeiouAEIOUnNuU')) ~ 'tiempo|demora|cuando|previsto|arrancar|ejecucion|turno|dia van|16' then 'Plazos de obra' when lower(translate(q->>'question', 'áéíóúÁÉÍÓÚñÑüÜ', 'aeiouAEIOUnNuU')) ~ 'foto|ver |visita|terreno|obras en la zona|se lo puede hacer' then 'Visita, fotos y obras hechas' when lower(translate(q->>'question', 'áéíóúÁÉÍÓÚñÑüÜ', 'aeiouAEIOUnNuU')) ~ 'arena|respondio|que paso|organizar|aclares|olvides' then 'Seguimiento de obra' when lower(translate(q->>'question', 'áéíóúÁÉÍÓÚñÑüÜ', 'aeiouAEIOUnNuU')) ~ 'informacion|detalle|aparte quiero|currículum|curriculum|videollamada|demo' then 'Pide información general' else 'Otra' end as tema, coalesce((q->>'answered')::boolean, false) as respondida\nfrom wa_latest_audits a join wa_talks t on t.talk_id=a.talk_id, jsonb_array_elements(coalesce(a.unanswered_questions,'[]'::jsonb)) q\nwhere ('piscinas-vazquez' = '__all__' OR t.hotel_id = 'piscinas-vazquez') and coalesce((select min(m0.message_created_at) from wa_messages m0 where m0.talk_id=t.talk_id and m0.direction='incoming'), t.first_seen_at) between $__timeFrom() and $__timeTo() and jsonb_typeof(q)='object' and lower(coalesce(q->>'asked_by',''))='cliente' and wa_pregunta_del_cliente(t.talk_id, q->>'question') and length(trim(coalesce(q->>'question','')))>3) x\ngroup by tema order by count(*) desc, tema",
+          "refId": "A"
+        }
+      ],
+      "title": "Que pregunta el cliente (y si se le respondio)",
+      "type": "barchart"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 57
+      },
+      "id": 242,
+      "title": "Actividad de mensajes",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "bfz14hr25v6kgd"
+      },
+      "description": "Cuantos mensajes hay de cada tipo (texto, audio, imagen, archivo, ubicacion). Fuente: wa_messages.message_type.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "#3987e5",
+            "mode": "fixed"
+          },
+          "unit": "none"
+        }
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 58
+      },
+      "id": 226,
+      "options": {
+        "barRadius": 0.15,
+        "barWidth": 0.7,
+        "fullHighlight": false,
+        "legend": {
+          "showLegend": false
+        },
+        "orientation": "horizontal",
+        "showValue": "always",
+        "xTickLabelRotation": 0
+      },
+      "pluginVersion": "",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "bfz14hr25v6kgd"
+          },
+          "format": "table",
+          "rawSql": "select case m.message_type when 'text' then 'Texto' when 'file' then 'Archivo' when 'voice' then 'Audio' when 'audio' then 'Audio' when 'sticker' then 'Sticker' when 'picture' then 'Imagen' when 'video' then 'Video' when 'location' then 'Ubicacion' else coalesce(m.message_type,'(sin tipo)') end as tipo, count(*) as v\nfrom wa_messages m join wa_talks t on t.talk_id=m.talk_id\nwhere ('piscinas-vazquez' = '__all__' OR t.hotel_id = 'piscinas-vazquez') and $__timeFilter(m.message_created_at)\ngroup by 1 order by 2 desc",
+          "refId": "A"
+        }
+      ],
+      "title": "Tipos de mensaje",
+      "type": "barchart"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "bfz14hr25v6kgd"
+      },
+      "description": "Total de mensajes de WhatsApp registrados (entrantes + salientes), de Piscinas Vazquez. Fuente: wa_messages.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "#3987e5",
+            "mode": "fixed"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
+          },
+          "unit": "none"
+        }
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 6,
+        "x": 12,
+        "y": 58
+      },
+      "id": 227,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "bfz14hr25v6kgd"
+          },
+          "format": "table",
+          "rawSql": "select count(*) as v from wa_messages m join wa_talks t on t.talk_id=m.talk_id where ('piscinas-vazquez' = '__all__' OR t.hotel_id = 'piscinas-vazquez') and $__timeFilter(m.message_created_at)",
+          "refId": "A"
+        }
+      ],
+      "title": "Total de mensajes",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "bfz14hr25v6kgd"
+      },
+      "description": "Promedio de mensajes por conversacion. Fuente: wa_messages, agrupado por talk_id.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "#3987e5",
+            "mode": "fixed"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
+          },
+          "unit": "none"
+        }
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 6,
+        "x": 18,
+        "y": 58
+      },
+      "id": 228,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "bfz14hr25v6kgd"
+          },
+          "format": "table",
+          "rawSql": "select round(avg(cnt)::numeric,1) as v from (\n  select m.talk_id, count(*) as cnt from wa_messages m join wa_talks t on t.talk_id=m.talk_id where ('piscinas-vazquez' = '__all__' OR t.hotel_id = 'piscinas-vazquez') and $__timeFilter(m.message_created_at) group by m.talk_id\n) x",
+          "refId": "A"
+        }
+      ],
+      "title": "Mensajes por conversacion",
+      "type": "stat"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 66
+      },
+      "id": 243,
+      "title": "Cuando y de donde entran las consultas",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "bfz14hr25v6kgd"
+      },
+      "description": "Dia de la semana con mas consultas de Piscinas Vazquez. La consulta se fecha con el PRIMER MENSAJE ENTRANTE de la conversacion, en hora de Cordoba. Fuente: vista wa_consultas. Solo consultas comerciales: sin CVs, proveedores ni chats internos.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "#3987e5",
+            "mode": "fixed"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
+          }
+        }
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 6,
+        "x": 0,
+        "y": 67
+      },
+      "id": 230,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "Dia",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "bfz14hr25v6kgd"
+          },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "select dia_semana as \"Dia\"\nfrom wa_consultas\nwhere hotel_id = 'piscinas-vazquez' and $__timeFilter(consulta_at) and not exists (select 1 from wa_latest_audits a where a.talk_id = wa_consultas.talk_id and (a.reservation_status = 'no_aplica' or a.raw_ai_response->>'inquiry_type' = 'otro'))\ngroup by dia_semana_num, dia_semana\norder by count(*) desc, dia_semana_num\nlimit 1",
+          "refId": "A"
+        }
+      ],
+      "title": "Dia mas consultado",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "bfz14hr25v6kgd"
+      },
+      "description": "Franja horaria con mas consultas de Piscinas Vazquez (00-08, 08-16 o 16-24, hora de Cordoba). La consulta se fecha con el PRIMER MENSAJE ENTRANTE de la conversacion, en hora de Cordoba. Fuente: vista wa_consultas. Solo consultas comerciales: sin CVs, proveedores ni chats internos.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "#3987e5",
+            "mode": "fixed"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
+          }
+        }
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 6,
+        "x": 6,
+        "y": 67
+      },
+      "id": 231,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "Franja",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "bfz14hr25v6kgd"
+          },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "select franja as \"Franja\"\nfrom wa_consultas\nwhere hotel_id = 'piscinas-vazquez' and $__timeFilter(consulta_at) and not exists (select 1 from wa_latest_audits a where a.talk_id = wa_consultas.talk_id and (a.reservation_status = 'no_aplica' or a.raw_ai_response->>'inquiry_type' = 'otro'))\ngroup by franja_num, franja\norder by count(*) desc, franja_num\nlimit 1",
+          "refId": "A"
+        }
+      ],
+      "title": "Franja mas solicitada",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "bfz14hr25v6kgd"
+      },
+      "description": "Cuantas consultas entraron en cada franja del dia (00-08, 08-16, 16-24), hora de Cordoba. La consulta se fecha con el PRIMER MENSAJE ENTRANTE de la conversacion, en hora de Cordoba. Fuente: vista wa_consultas. Solo consultas comerciales: sin CVs, proveedores ni chats internos.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "#3987e5",
+            "mode": "fixed"
+          },
+          "unit": "none"
+        }
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 12,
+        "x": 12,
+        "y": 67
+      },
+      "id": 232,
+      "options": {
+        "barRadius": 0.15,
+        "barWidth": 0.7,
+        "fullHighlight": false,
+        "legend": {
+          "showLegend": false
+        },
+        "orientation": "horizontal",
+        "showValue": "always",
+        "xTickLabelRotation": 0
+      },
+      "pluginVersion": "",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "bfz14hr25v6kgd"
+          },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "select franja as \"Franja\", count(*) as \"Consultas\"\nfrom wa_consultas\nwhere hotel_id = 'piscinas-vazquez' and $__timeFilter(consulta_at) and not exists (select 1 from wa_latest_audits a where a.talk_id = wa_consultas.talk_id and (a.reservation_status = 'no_aplica' or a.raw_ai_response->>'inquiry_type' = 'otro'))\ngroup by franja_num, franja\norder by franja_num",
+          "refId": "A"
+        }
+      ],
+      "title": "Consultas por franja horaria",
+      "type": "barchart"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "bfz14hr25v6kgd"
+      },
+      "description": "Cuantas consultas entraron cada dia de la semana, de lunes a domingo. La consulta se fecha con el PRIMER MENSAJE ENTRANTE de la conversacion, en hora de Cordoba. Fuente: vista wa_consultas. Solo consultas comerciales: sin CVs, proveedores ni chats internos.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "#3987e5",
+            "mode": "fixed"
+          },
+          "unit": "none"
+        }
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 72
+      },
+      "id": 233,
+      "options": {
+        "barRadius": 0.15,
+        "barWidth": 0.7,
+        "fullHighlight": false,
+        "legend": {
+          "showLegend": false
+        },
+        "orientation": "horizontal",
+        "showValue": "always",
+        "xTickLabelRotation": 0
+      },
+      "pluginVersion": "",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "bfz14hr25v6kgd"
+          },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "select dia_semana as \"Dia\", count(*) as \"Consultas\"\nfrom wa_consultas\nwhere hotel_id = 'piscinas-vazquez' and $__timeFilter(consulta_at) and not exists (select 1 from wa_latest_audits a where a.talk_id = wa_consultas.talk_id and (a.reservation_status = 'no_aplica' or a.raw_ai_response->>'inquiry_type' = 'otro'))\ngroup by dia_semana_num, dia_semana\norder by dia_semana_num",
+          "refId": "A"
+        }
+      ],
+      "title": "Consultas por dia de la semana",
+      "type": "barchart"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "bfz14hr25v6kgd"
+      },
+      "description": "De donde vino cada consulta (Meta, Google, etc.). Se deduce del primer mensaje: los anuncios abren el WhatsApp con un texto fijo. Las reglas estan en la tabla wa_lead_sources; \"sin identificar\" = todavia no hay regla que matchee ese texto. Solo consultas comerciales: sin CVs, proveedores ni chats internos.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          }
+        }
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 72
+      },
+      "id": 234,
+      "options": {
+        "displayLabels": [
+          "percent"
+        ],
+        "legend": {
+          "displayMode": "table",
+          "placement": "right",
+          "showLegend": true,
+          "values": [
+            "value"
+          ]
+        },
+        "pieType": "donut",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "bfz14hr25v6kgd"
+          },
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "select fuente as \"Origen\", count(*) as \"Consultas\"\nfrom wa_consultas\nwhere hotel_id = 'piscinas-vazquez' and $__timeFilter(consulta_at) and not exists (select 1 from wa_latest_audits a where a.talk_id = wa_consultas.talk_id and (a.reservation_status = 'no_aplica' or a.raw_ai_response->>'inquiry_type' = 'otro'))\ngroup by 1\norder by 2 desc",
+          "refId": "A"
+        }
+      ],
+      "title": "Origen del lead",
+      "type": "piechart"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "bfz14hr25v6kgd"
+      },
+      "description": "De que campaña vino cada consulta, segun el dato de origen del lead. 'Sin identificar' = no trae dato de campaña.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "#3987e5",
+            "mode": "fixed"
+          },
+          "custom": {
+            "axisPlacement": "auto",
+            "axisSoftMin": 0,
+            "fillOpacity": 85,
+            "gradientMode": "none",
+            "lineWidth": 0
+          },
+          "decimals": 0,
+          "min": 0,
+          "unit": "none"
+        }
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 80
+      },
+      "id": 235,
+      "options": {
+        "barWidth": 0.7,
+        "groupWidth": 0.7,
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "orientation": "horizontal",
+        "showValue": "always",
+        "stacking": "none",
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        },
+        "xTickLabelMaxLength": 0,
+        "xTickLabelRotation": 0
+      },
+      "pluginVersion": "",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "bfz14hr25v6kgd"
+          },
+          "format": "table",
+          "rawSql": "select case when fuente = 'sin identificar' then 'Sin identificar' else initcap(fuente) || ' · ' || campania end as \"Campaña\", count(*) as \"Consultas\"\nfrom wa_consultas\nwhere hotel_id = 'piscinas-vazquez' and $__timeFilter(consulta_at) and not exists (select 1 from wa_latest_audits a where a.talk_id = wa_consultas.talk_id and (a.reservation_status = 'no_aplica' or a.raw_ai_response->>'inquiry_type' = 'otro'))\ngroup by 1\norder by 2 desc",
+          "refId": "A"
+        }
+      ],
+      "title": "Consultas por campaña",
+      "type": "barchart"
+    }
+  ],
+  "preload": false,
+  "refresh": "5m",
+  "schemaVersion": 42,
+  "tags": [
+    "kuro",
+    "whatsapp",
+    "piscinas-vazquez",
+    "demanda"
+  ],
+  "templating": {
+    "list": [
+      {
+        "allowCustomValue": true,
+        "current": {
+          "text": "piscinas-vazquez",
+          "value": "piscinas-vazquez"
+        },
+        "hide": 2,
+        "includeAll": false,
+        "label": "Cliente",
+        "multi": false,
+        "name": "hotel_id",
+        "options": [
+          {
+            "selected": true,
+            "text": "piscinas-vazquez",
+            "value": "piscinas-vazquez"
+          }
+        ],
+        "query": "piscinas-vazquez",
+        "skipUrlSync": false,
+        "type": "custom"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-90d",
+    "to": "now"
+  },
+  "timepicker": {
+    "refresh_intervals": [
+      "5s",
+      "10s",
+      "30s",
+      "1m",
+      "5m",
+      "15m",
+      "30m",
+      "1h",
+      "2h",
+      "1d"
+    ]
+  },
+  "timezone": "America/Argentina/Cordoba",
+  "title": "Kuro - Demanda - Piscinas Vazquez",
+  "uid": "kuro-wa-demanda-piscinas-vazquez",
+  "version": 19
+}

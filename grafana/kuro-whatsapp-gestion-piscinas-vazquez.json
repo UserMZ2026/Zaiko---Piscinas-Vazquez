@@ -1,0 +1,3240 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "description": "Conversion, tiempos de respuesta, objeciones y calidad de atencion de Piscinas Vazquez. Estos paneles son iguales para cualquier rubro: no dependen de wa_conversation_audits.vertical_data. Todos los paneles respetan el periodo elegido arriba a la derecha: una conversacion cuenta en el periodo en que el cliente escribio por primera vez.",
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": 7707190562816,
+  "liveNow": false,
+  "panels": [
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 249,
+      "title": "Resultado",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "bfz14hr25v6kgd"
+      },
+      "description": "Total de conversaciones auditadas de Piscinas Vazquez. Fuente: wa_conversation_audits. Solo cuenta consultas comerciales: deja afuera lo que la IA marca como no comercial (CVs, proveedores, chats internos del personal).",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "#3987e5",
+            "mode": "fixed"
+          },
+          "noValue": "Sin datos",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
+          },
+          "unit": "none"
+        }
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 4,
+        "x": 0,
+        "y": 1
+      },
+      "id": 202,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "bfz14hr25v6kgd"
+          },
+          "format": "table",
+          "rawSql": "select count(*) as v from wa_latest_audits a join wa_talks t on t.talk_id=a.talk_id where ('piscinas-vazquez' = '__all__' OR t.hotel_id = 'piscinas-vazquez') and coalesce((select min(m0.message_created_at) from wa_messages m0 where m0.talk_id=t.talk_id and m0.direction='incoming'), t.first_seen_at) between $__timeFrom() and $__timeTo() and coalesce(a.reservation_status,'') <> 'no_aplica' and coalesce(a.raw_ai_response->>'inquiry_type','') <> 'otro'",
+          "refId": "A"
+        }
+      ],
+      "title": "Conversaciones",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "bfz14hr25v6kgd"
+      },
+      "description": "Conversaciones donde la IA detecto que la venta quedo confirmada, leyendo el texto (no es un dato de Kommo). Fuente: wa_conversation_audits.reservation_status. Solo cuenta consultas comerciales: deja afuera lo que la IA marca como no comercial (CVs, proveedores, chats internos del personal).",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "#3987e5",
+            "mode": "fixed"
+          },
+          "noValue": "0",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
+          },
+          "unit": "none"
+        }
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 4,
+        "x": 4,
+        "y": 1
+      },
+      "id": 203,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "bfz14hr25v6kgd"
+          },
+          "format": "table",
+          "rawSql": "select count(*) as v from wa_latest_audits a join wa_talks t on t.talk_id=a.talk_id where ('piscinas-vazquez' = '__all__' OR t.hotel_id = 'piscinas-vazquez') and coalesce((select min(m0.message_created_at) from wa_messages m0 where m0.talk_id=t.talk_id and m0.direction='incoming'), t.first_seen_at) between $__timeFrom() and $__timeTo() and coalesce(a.reservation_status,'') <> 'no_aplica' and coalesce(a.raw_ai_response->>'inquiry_type','') <> 'otro' and a.reservation_status ilike '%confirm%'",
+          "refId": "A"
+        }
+      ],
+      "title": "Confirmadas",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "bfz14hr25v6kgd"
+      },
+      "description": "Conversaciones que el sistema sigue monitoreando y todavia no terminaron en venta confirmada. Fuente: wa_talks.status + wa_conversation_audits.reservation_status. Solo cuenta consultas comerciales: deja afuera lo que la IA marca como no comercial (CVs, proveedores, chats internos del personal).",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "#3987e5",
+            "mode": "fixed"
+          },
+          "noValue": "Sin datos",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
+          },
+          "unit": "none"
+        }
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 4,
+        "x": 8,
+        "y": 1
+      },
+      "id": 204,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "bfz14hr25v6kgd"
+          },
+          "format": "table",
+          "rawSql": "select count(*) as v from wa_latest_audits a join wa_talks t on t.talk_id=a.talk_id where ('piscinas-vazquez' = '__all__' OR t.hotel_id = 'piscinas-vazquez') and coalesce((select min(m0.message_created_at) from wa_messages m0 where m0.talk_id=t.talk_id and m0.direction='incoming'), t.first_seen_at) between $__timeFrom() and $__timeTo() and coalesce(a.reservation_status,'') <> 'no_aplica' and coalesce(a.raw_ai_response->>'inquiry_type','') <> 'otro' and t.status='monitoring' and (a.reservation_status is null or a.reservation_status not ilike '%confirm%')",
+          "refId": "A"
+        }
+      ],
+      "title": "En curso",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "bfz14hr25v6kgd"
+      },
+      "description": "Porcentaje de conversaciones que terminaron en venta confirmada segun la IA, sobre el total. Estimacion cualitativa, no un dato exacto de ventas de Kommo. Solo cuenta consultas comerciales: deja afuera lo que la IA marca como no comercial (CVs, proveedores, chats internos del personal).",
+      "fieldConfig": {
+        "defaults": {
+          "max": 100,
+          "min": 0,
+          "noValue": "Sin datos",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#3987e5",
+                "value": null
+              }
+            ]
+          },
+          "unit": "percent"
+        }
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 4,
+        "x": 12,
+        "y": 1
+      },
+      "id": 205,
+      "options": {
+        "minVizHeight": 60,
+        "minVizWidth": 8,
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": false,
+        "sizing": "auto"
+      },
+      "pluginVersion": "",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "bfz14hr25v6kgd"
+          },
+          "format": "table",
+          "rawSql": "select round(100.0*count(*) filter (where a.reservation_status ilike '%confirm%')/nullif(count(*),0),1) as v from wa_latest_audits a join wa_talks t on t.talk_id=a.talk_id where ('piscinas-vazquez' = '__all__' OR t.hotel_id = 'piscinas-vazquez') and coalesce((select min(m0.message_created_at) from wa_messages m0 where m0.talk_id=t.talk_id and m0.direction='incoming'), t.first_seen_at) between $__timeFrom() and $__timeTo() and coalesce(a.reservation_status,'') <> 'no_aplica' and coalesce(a.raw_ai_response->>'inquiry_type','') <> 'otro'",
+          "refId": "A"
+        }
+      ],
+      "title": "Conversion",
+      "type": "gauge"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "bfz14hr25v6kgd"
+      },
+      "description": "Conversaciones donde la empresa menciono un precio concreto, segun lo que leyo la IA. Fuente: wa_conversation_audits.quoted_price. Solo cuenta consultas comerciales: deja afuera lo que la IA marca como no comercial (CVs, proveedores, chats internos del personal).",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "#3987e5",
+            "mode": "fixed"
+          },
+          "noValue": "0",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
+          },
+          "unit": "none"
+        }
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 4,
+        "x": 16,
+        "y": 1
+      },
+      "id": 206,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "bfz14hr25v6kgd"
+          },
+          "format": "table",
+          "rawSql": "select count(*) as v from wa_latest_audits a join wa_talks t on t.talk_id=a.talk_id where ('piscinas-vazquez' = '__all__' OR t.hotel_id = 'piscinas-vazquez') and coalesce((select min(m0.message_created_at) from wa_messages m0 where m0.talk_id=t.talk_id and m0.direction='incoming'), t.first_seen_at) between $__timeFrom() and $__timeTo() and coalesce(a.reservation_status,'') <> 'no_aplica' and coalesce(a.raw_ai_response->>'inquiry_type','') <> 'otro' and a.quoted_price is not null",
+          "refId": "A"
+        }
+      ],
+      "title": "Con precio",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "bfz14hr25v6kgd"
+      },
+      "description": "Suma de los precios cotizados, separada por moneda (no se mezclan USD con pesos), en las conversaciones que terminaron confirmadas. Es lo que se cotizo por chat, no un monto de facturacion verificado. Fuente: wa_conversation_audits.quoted_price. Solo cuenta consultas comerciales: deja afuera lo que la IA marca como no comercial (CVs, proveedores, chats internos del personal).",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "#3987e5",
+            "mode": "fixed"
+          },
+          "noValue": "Sin datos",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
+          },
+          "unit": "string"
+        }
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 4,
+        "x": 20,
+        "y": 1
+      },
+      "id": 207,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "/^v$/",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "bfz14hr25v6kgd"
+          },
+          "format": "table",
+          "rawSql": "select coalesce(string_agg(cur || ' ' || replace(to_char(total, 'FM999,999,999,990'), ',', '.'), ' · ' order by n desc, cur), 'Sin datos') as v from (select coalesce(a.quoted_currency, '(sin moneda)') as cur, sum(a.quoted_price) as total, count(*) as n from wa_latest_audits a join wa_talks t on t.talk_id=a.talk_id where ('piscinas-vazquez' = '__all__' OR t.hotel_id = 'piscinas-vazquez') and coalesce((select min(m0.message_created_at) from wa_messages m0 where m0.talk_id=t.talk_id and m0.direction='incoming'), t.first_seen_at) between $__timeFrom() and $__timeTo() and coalesce(a.reservation_status,'') <> 'no_aplica' and coalesce(a.raw_ai_response->>'inquiry_type','') <> 'otro' and a.reservation_status ilike '%confirm%' and a.quoted_price is not null group by 1) x",
+          "refId": "A"
+        }
+      ],
+      "title": "Monto cotizado",
+      "type": "stat"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 28
+      },
+      "id": 250,
+      "title": "Velocidad",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "bfz14hr25v6kgd"
+      },
+      "description": "Porcentaje de conversaciones donde se llego a mencionar un precio, sobre el total. Fuente: wa_conversation_audits.quoted_price. Solo cuenta consultas comerciales: deja afuera lo que la IA marca como no comercial (CVs, proveedores, chats internos del personal).",
+      "fieldConfig": {
+        "defaults": {
+          "max": 100,
+          "min": 0,
+          "noValue": "Sin datos",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#3987e5",
+                "value": null
+              }
+            ]
+          },
+          "unit": "percent"
+        }
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 6,
+        "x": 0,
+        "y": 29
+      },
+      "id": 209,
+      "options": {
+        "minVizHeight": 60,
+        "minVizWidth": 8,
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": false,
+        "sizing": "auto"
+      },
+      "pluginVersion": "",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "bfz14hr25v6kgd"
+          },
+          "format": "table",
+          "rawSql": "select round(100.0*count(*) filter (where a.quoted_price is not null)/nullif(count(*),0),1) as v from wa_latest_audits a join wa_talks t on t.talk_id=a.talk_id where ('piscinas-vazquez' = '__all__' OR t.hotel_id = 'piscinas-vazquez') and coalesce((select min(m0.message_created_at) from wa_messages m0 where m0.talk_id=t.talk_id and m0.direction='incoming'), t.first_seen_at) between $__timeFrom() and $__timeTo() and coalesce(a.reservation_status,'') <> 'no_aplica' and coalesce(a.raw_ai_response->>'inquiry_type','') <> 'otro'",
+          "refId": "A"
+        }
+      ],
+      "title": "Llegan a cotizacion",
+      "type": "gauge"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "bfz14hr25v6kgd"
+      },
+      "description": "Minutos de horario laboral que tarda el equipo en contestar el primer mensaje de una conversacion nueva (mediana). Se mide desde el PRIMER mensaje del cliente que quedo sin responder hasta la primera respuesta de una persona del equipo; las bienvenidas automaticas de Kommo no cuentan como respuesta. Se descartan los turnos donde el cliente solo dijo 'gracias', 'ok' o similar, y las conversaciones que la IA marca como no comerciales. Filtra por la fecha en que escribio el cliente dentro del periodo elegido arriba. Fuente: wa_response_turns (calculado de wa_messages, se actualiza cada 30 min). Horario laboral: lunes a viernes de 9 a 18 h y sabado de 10 a 15 h (hora de Argentina); domingos y feriados cargados en wa_holidays no cuentan.",
+      "fieldConfig": {
+        "defaults": {
+          "noValue": "Sin datos",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#0ca30c",
+                "value": null
+              },
+              {
+                "color": "#fab219",
+                "value": 30
+              },
+              {
+                "color": "#ec835a",
+                "value": 60
+              },
+              {
+                "color": "#d03b3b",
+                "value": 240
+              }
+            ]
+          },
+          "unit": "m"
+        }
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 6,
+        "x": 6,
+        "y": 29
+      },
+      "id": 210,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "bfz14hr25v6kgd"
+          },
+          "format": "table",
+          "rawSql": "select round((percentile_cont(0.5) within group (order by r.business_seconds) / 60.0)::numeric, 1) as v from wa_response_turns r left join wa_latest_audits a on a.talk_id = r.talk_id where ('piscinas-vazquez' = '__all__' OR r.hotel_id = 'piscinas-vazquez') and not r.trivial and r.asked_at between $__timeFrom() and $__timeTo() and coalesce(a.reservation_status,'') <> 'no_aplica' and coalesce(a.raw_ai_response->>'inquiry_type','') <> 'otro' and r.responded_at is not null and r.is_first_turn",
+          "refId": "A"
+        }
+      ],
+      "title": "1ra resp. (mediana, habil)",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "bfz14hr25v6kgd"
+      },
+      "description": "Conversaciones sin ningun precio mencionado todavia. Fuente: wa_conversation_audits.quoted_price. Solo cuenta consultas comerciales: deja afuera lo que la IA marca como no comercial (CVs, proveedores, chats internos del personal).",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "#3987e5",
+            "mode": "fixed"
+          },
+          "noValue": "0",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
+          },
+          "unit": "none"
+        }
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 6,
+        "x": 12,
+        "y": 29
+      },
+      "id": 211,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "bfz14hr25v6kgd"
+          },
+          "format": "table",
+          "rawSql": "select count(*) as v from wa_latest_audits a join wa_talks t on t.talk_id=a.talk_id where ('piscinas-vazquez' = '__all__' OR t.hotel_id = 'piscinas-vazquez') and coalesce((select min(m0.message_created_at) from wa_messages m0 where m0.talk_id=t.talk_id and m0.direction='incoming'), t.first_seen_at) between $__timeFrom() and $__timeTo() and coalesce(a.reservation_status,'') <> 'no_aplica' and coalesce(a.raw_ai_response->>'inquiry_type','') <> 'otro' and a.quoted_price is null",
+          "refId": "A"
+        }
+      ],
+      "title": "Nunca llegaron a cotizar",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "bfz14hr25v6kgd"
+      },
+      "description": "Puntaje 0-100 que la IA asigna a que tan bien se aprovecho la oportunidad de venta, promediado. Fuente: wa_conversation_audits.commercial_score. Solo cuenta consultas comerciales: deja afuera lo que la IA marca como no comercial (CVs, proveedores, chats internos del personal).",
+      "fieldConfig": {
+        "defaults": {
+          "max": 100,
+          "min": 0,
+          "noValue": "Sin datos",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#d03b3b",
+                "value": null
+              },
+              {
+                "color": "#fab219",
+                "value": 40
+              },
+              {
+                "color": "#0ca30c",
+                "value": 70
+              }
+            ]
+          },
+          "unit": "none"
+        }
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 6,
+        "x": 18,
+        "y": 29
+      },
+      "id": 212,
+      "options": {
+        "minVizHeight": 60,
+        "minVizWidth": 8,
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "sizing": "auto"
+      },
+      "pluginVersion": "",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "bfz14hr25v6kgd"
+          },
+          "format": "table",
+          "rawSql": "select round(avg(a.commercial_score)::numeric,1) as v from wa_latest_audits a join wa_talks t on t.talk_id=a.talk_id where ('piscinas-vazquez' = '__all__' OR t.hotel_id = 'piscinas-vazquez') and coalesce((select min(m0.message_created_at) from wa_messages m0 where m0.talk_id=t.talk_id and m0.direction='incoming'), t.first_seen_at) between $__timeFrom() and $__timeTo() and coalesce(a.reservation_status,'') <> 'no_aplica' and coalesce(a.raw_ai_response->>'inquiry_type','') <> 'otro'",
+          "refId": "A"
+        }
+      ],
+      "title": "Comercial",
+      "type": "gauge"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 37
+      },
+      "id": 251,
+      "title": "Por que no avanzan (leido por la IA)",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "bfz14hr25v6kgd"
+      },
+      "description": "Objeciones que la IA detecto en el chat, agrupadas por tema. Cada barra cuenta conversaciones y se divide segun como quedo: lo rojo/naranja es venta que no se dio. Entre parentesis, el total. Reemplaza a las tablas 'Objeciones' y 'Motivo de perdida'; se infiere de lo que dijo el cliente, no es un motivo cargado por un vendedor. Cada frase que escribio la IA se agrupa en una categoria por palabras clave (sin IA extra, sin inventar); el texto original esta en la fila 'Detalle'. Solo cuenta consultas comerciales: deja afuera lo que la IA marca como no comercial (CVs, proveedores, chats internos del personal).",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "#3987e5",
+            "mode": "fixed"
+          },
+          "custom": {
+            "axisPlacement": "auto",
+            "axisSoftMin": 0,
+            "fillOpacity": 85,
+            "gradientMode": "none",
+            "lineWidth": 0
+          },
+          "decimals": 0,
+          "min": 0,
+          "unit": "none"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Perdida"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "#e02f44",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Sin avance"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "#ff9830",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "En negociacion"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "#fade2a",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Sin clasificar"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "#8e8e8e",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Confirmada"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "#56a64b",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 11,
+        "w": 12,
+        "x": 0,
+        "y": 38
+      },
+      "id": 214,
+      "options": {
+        "barWidth": 0.7,
+        "groupWidth": 0.7,
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "orientation": "horizontal",
+        "showValue": "never",
+        "stacking": "normal",
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        },
+        "xTickLabelMaxLength": 0,
+        "xTickLabelRotation": 0
+      },
+      "pluginVersion": "",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "bfz14hr25v6kgd"
+          },
+          "format": "table",
+          "rawSql": "select categoria || '  (' || count(distinct talk_id) || ')' as \"Por que duda\",\n  nullif(count(distinct talk_id) filter (where estado = 'Perdida'), 0) as \"Perdida\",\n  nullif(count(distinct talk_id) filter (where estado = 'Sin avance'), 0) as \"Sin avance\",\n  nullif(count(distinct talk_id) filter (where estado = 'En negociacion'), 0) as \"En negociacion\",\n  nullif(count(distinct talk_id) filter (where estado = 'Sin clasificar'), 0) as \"Sin clasificar\",\n  nullif(count(distinct talk_id) filter (where estado = 'Confirmada'), 0) as \"Confirmada\"\nfrom (select i.*, case when lower(translate(i.texto, 'áéíóúÁÉÍÓÚñÑüÜ', 'aeiouAEIOUnNuU')) ~ 'no hacen|no se realiza|reparaciones' then 'Servicio que no hacen' when lower(translate(i.texto, 'áéíóúÁÉÍÓÚñÑüÜ', 'aeiouAEIOUnNuU')) ~ 'visita tecnica|lejos' then 'Visita técnica (lejos o no le interesa)' when lower(translate(i.texto, 'áéíóúÁÉÍÓÚñÑüÜ', 'aeiouAEIOUnNuU')) ~ 'caro|plata|presupuesto|precio|costo|capacidad economica|gastos|tasa|financiacion' then 'Precio alto / no le alcanza' when lower(translate(i.texto, 'áéíóúÁÉÍÓÚñÑüÜ', 'aeiouAEIOUnNuU')) ~ 'pospone|este ano|por ahora|no puede encarar|prioridades' then 'Lo posterga' when lower(translate(i.texto, 'áéíóúÁÉÍÓÚñÑüÜ', 'aeiouAEIOUnNuU')) ~ 'danos|arena|flete|codo|retras|rajadura|luz|cascada|recibos|cheques|nylon|desprotegida|peligro|desborde' then 'Reclamos de obra' else 'Otra' end as categoria from (select t.talk_id, a.created_at, case when coalesce(a.reservation_status,'') ilike '%confirm%' then 'Confirmada' when a.reservation_status='en_negociacion' then 'En negociacion' when a.reservation_status='sin_avance' then 'Sin avance' when a.reservation_status in ('perdida','cancelada') then 'Perdida' else 'Sin clasificar' end as estado, case jsonb_typeof(o) when 'object' then coalesce(o->>'objection', o->>'reason', o->>'detail', o #>> '{}') else o #>> '{}' end as texto, o->>'priority' as prioridad from wa_latest_audits a join wa_talks t on t.talk_id=a.talk_id, jsonb_array_elements(coalesce(a.objections,'[]'::jsonb)) o where ('piscinas-vazquez' = '__all__' OR t.hotel_id = 'piscinas-vazquez') and coalesce((select min(m0.message_created_at) from wa_messages m0 where m0.talk_id=t.talk_id and m0.direction='incoming'), t.first_seen_at) between $__timeFrom() and $__timeTo() and coalesce(a.reservation_status,'') <> 'no_aplica' and coalesce(a.raw_ai_response->>'inquiry_type','') <> 'otro') i where nullif(trim(i.texto),'') is not null) c group by categoria order by count(distinct talk_id) desc, categoria",
+          "refId": "A"
+        }
+      ],
+      "title": "Por que duda el cliente (y como termino)",
+      "type": "barchart"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "bfz14hr25v6kgd"
+      },
+      "description": "Preguntas que escribio el CLIENTE, agrupadas por tema. Verde = se respondio; rojo = quedo sin respuesta. Entre parentesis, el total. Ordenado por las que mas quedan sin responder. Cada frase que escribio la IA se agrupa en una categoria por palabras clave (sin IA extra, sin inventar); el texto original esta en la fila 'Detalle'. Solo cuenta consultas comerciales: deja afuera lo que la IA marca como no comercial (CVs, proveedores, chats internos del personal).",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "#3987e5",
+            "mode": "fixed"
+          },
+          "custom": {
+            "axisPlacement": "auto",
+            "axisSoftMin": 0,
+            "fillOpacity": 85,
+            "gradientMode": "none",
+            "lineWidth": 0
+          },
+          "decimals": 0,
+          "min": 0,
+          "unit": "none"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Respondidas"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "#56a64b",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Sin responder"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "#e02f44",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 11,
+        "w": 12,
+        "x": 12,
+        "y": 38
+      },
+      "id": 215,
+      "options": {
+        "barWidth": 0.7,
+        "groupWidth": 0.7,
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "orientation": "horizontal",
+        "showValue": "never",
+        "stacking": "normal",
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        },
+        "xTickLabelMaxLength": 0,
+        "xTickLabelRotation": 0
+      },
+      "pluginVersion": "",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "bfz14hr25v6kgd"
+          },
+          "format": "table",
+          "rawSql": "select categoria || '  (' || count(*) || ')' as \"Tema\", nullif(count(*) filter (where respondida), 0) as \"Respondidas\", nullif(count(*) filter (where not respondida), 0) as \"Sin responder\"\nfrom (select i.*, case when lower(translate(i.texto, 'áéíóúÁÉÍÓÚñÑüÜ', 'aeiouAEIOUnNuU')) ~ 'pago|financ|tarjeta|efectivo' then 'Formas de pago y financiación' when lower(translate(i.texto, 'áéíóúÁÉÍÓÚñÑüÜ', 'aeiouAEIOUnNuU')) ~ 'garantia|incluye|instalada|colocacion|mano de obra|arreglos|yo tengo el material|dentro del precio|proyecto completo' then 'Garantía y qué incluye' when lower(translate(i.texto, 'áéíóúÁÉÍÓÚñÑüÜ', 'aeiouAEIOUnNuU')) ~ 'precio|cuanto|costo|sale |saldria|presupuesto|cotizar|promo|valor' then 'Precio y presupuesto' when lower(translate(i.texto, 'áéíóúÁÉÍÓÚñÑüÜ', 'aeiouAEIOUnNuU')) ~ 'medida|modelo|tamano|profundidad|fibra|\\d x \\d|mas chica|grande|dimensiones' then 'Modelos y medidas' when lower(translate(i.texto, 'áéíóúÁÉÍÓÚñÑüÜ', 'aeiouAEIOUnNuU')) ~ 'revestimiento|piedra|venecita|ceramic|hormigon|cemento|material|especificaciones|venden|luces|sala de maquinas|caneria|cascada|solarium|pintura' then 'Materiales y terminaciones' when lower(translate(i.texto, 'áéíóúÁÉÍÓÚñÑüÜ', 'aeiouAEIOUnNuU')) ~ 'provincia|carlos paz|villa maria|interior|donde son|lugar|de donde|santiago' then 'Zona donde trabajan' when lower(translate(i.texto, 'áéíóúÁÉÍÓÚñÑüÜ', 'aeiouAEIOUnNuU')) ~ 'tiempo|demora|cuando|previsto|arrancar|ejecucion|turno|dia van|16' then 'Plazos de obra' when lower(translate(i.texto, 'áéíóúÁÉÍÓÚñÑüÜ', 'aeiouAEIOUnNuU')) ~ 'foto|ver |visita|terreno|obras en la zona|se lo puede hacer' then 'Visita, fotos y obras hechas' when lower(translate(i.texto, 'áéíóúÁÉÍÓÚñÑüÜ', 'aeiouAEIOUnNuU')) ~ 'arena|respondio|que paso|organizar|aclares|olvides' then 'Seguimiento de obra' when lower(translate(i.texto, 'áéíóúÁÉÍÓÚñÑüÜ', 'aeiouAEIOUnNuU')) ~ 'informacion|detalle|aparte quiero|currículum|curriculum|videollamada|demo' then 'Pide información general' else 'Otra' end as categoria from (select t.talk_id, a.created_at, case when coalesce(a.reservation_status,'') ilike '%confirm%' then 'Confirmada' when a.reservation_status='en_negociacion' then 'En negociacion' when a.reservation_status='sin_avance' then 'Sin avance' when a.reservation_status in ('perdida','cancelada') then 'Perdida' else 'Sin clasificar' end as estado, o->>'question' as texto, coalesce((o->>'answered')::boolean, false) as respondida from wa_latest_audits a join wa_talks t on t.talk_id=a.talk_id, jsonb_array_elements(coalesce(a.unanswered_questions,'[]'::jsonb)) o where ('piscinas-vazquez' = '__all__' OR t.hotel_id = 'piscinas-vazquez') and coalesce((select min(m0.message_created_at) from wa_messages m0 where m0.talk_id=t.talk_id and m0.direction='incoming'), t.first_seen_at) between $__timeFrom() and $__timeTo() and coalesce(a.reservation_status,'') <> 'no_aplica' and coalesce(a.raw_ai_response->>'inquiry_type','') <> 'otro' and jsonb_typeof(o)='object' and lower(coalesce(o->>'asked_by',''))='cliente' and wa_pregunta_del_cliente(t.talk_id, o->>'question')) i where nullif(trim(i.texto),'') is not null) c group by categoria order by count(*) filter (where not respondida) desc, count(*) desc, categoria",
+          "refId": "A"
+        }
+      ],
+      "title": "Que pregunta el cliente (y si se le respondio)",
+      "type": "barchart"
+    },
+    {
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 49
+      },
+      "id": 252,
+      "panels": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "bfz14hr25v6kgd"
+          },
+          "description": "Texto original de la IA detras de los 2 graficos de arriba, con la categoria asignada. Cada frase que escribio la IA se agrupa en una categoria por palabras clave (sin IA extra, sin inventar); el texto original esta en la fila 'Detalle'. Solo cuenta consultas comerciales: deja afuera lo que la IA marca como no comercial (CVs, proveedores, chats internos del personal).",
+          "fieldConfig": {
+            "defaults": {
+              "custom": {
+                "align": "auto",
+                "cellOptions": {
+                  "type": "auto",
+                  "wrapText": true
+                },
+                "filterable": true
+              },
+              "noValue": "Sin registros todavia"
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Conversacion"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 100
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Auditado"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 150
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Tipo"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 170
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Estado"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 130
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Categoria"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 260
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 10,
+            "w": 24,
+            "x": 0,
+            "y": 50
+          },
+          "id": 248,
+          "options": {
+            "cellHeight": "md",
+            "footer": {
+              "show": false
+            },
+            "showHeader": true
+          },
+          "pluginVersion": "",
+          "targets": [
+            {
+              "datasource": {
+                "type": "postgres",
+                "uid": "bfz14hr25v6kgd"
+              },
+              "format": "table",
+              "rawSql": "select talk_id as \"Conversacion\", created_at as \"Auditado\", regexp_replace(tipo, '^[0-9]+\\. ', '') as \"Tipo\", estado as \"Estado\", categoria as \"Categoria\", texto as \"Lo que escribio la IA\" from (\nselect talk_id, created_at, '1. Objecion' as tipo, estado, regexp_replace(categoria, '^[0-9]+\\. ', '') as categoria, texto from (select i.*, case when lower(translate(i.texto, 'áéíóúÁÉÍÓÚñÑüÜ', 'aeiouAEIOUnNuU')) ~ 'no hacen|no se realiza|reparaciones' then 'Servicio que no hacen' when lower(translate(i.texto, 'áéíóúÁÉÍÓÚñÑüÜ', 'aeiouAEIOUnNuU')) ~ 'visita tecnica|lejos' then 'Visita técnica (lejos o no le interesa)' when lower(translate(i.texto, 'áéíóúÁÉÍÓÚñÑüÜ', 'aeiouAEIOUnNuU')) ~ 'caro|plata|presupuesto|precio|costo|capacidad economica|gastos|tasa|financiacion' then 'Precio alto / no le alcanza' when lower(translate(i.texto, 'áéíóúÁÉÍÓÚñÑüÜ', 'aeiouAEIOUnNuU')) ~ 'pospone|este ano|por ahora|no puede encarar|prioridades' then 'Lo posterga' when lower(translate(i.texto, 'áéíóúÁÉÍÓÚñÑüÜ', 'aeiouAEIOUnNuU')) ~ 'danos|arena|flete|codo|retras|rajadura|luz|cascada|recibos|cheques|nylon|desprotegida|peligro|desborde' then 'Reclamos de obra' else 'Otra' end as categoria from (select t.talk_id, a.created_at, case when coalesce(a.reservation_status,'') ilike '%confirm%' then 'Confirmada' when a.reservation_status='en_negociacion' then 'En negociacion' when a.reservation_status='sin_avance' then 'Sin avance' when a.reservation_status in ('perdida','cancelada') then 'Perdida' else 'Sin clasificar' end as estado, case jsonb_typeof(o) when 'object' then coalesce(o->>'objection', o->>'reason', o->>'detail', o #>> '{}') else o #>> '{}' end as texto, o->>'priority' as prioridad from wa_latest_audits a join wa_talks t on t.talk_id=a.talk_id, jsonb_array_elements(coalesce(a.objections,'[]'::jsonb)) o where ('piscinas-vazquez' = '__all__' OR t.hotel_id = 'piscinas-vazquez') and coalesce((select min(m0.message_created_at) from wa_messages m0 where m0.talk_id=t.talk_id and m0.direction='incoming'), t.first_seen_at) between $__timeFrom() and $__timeTo() and coalesce(a.reservation_status,'') <> 'no_aplica' and coalesce(a.raw_ai_response->>'inquiry_type','') <> 'otro') i where nullif(trim(i.texto),'') is not null) cobj\nunion all\nselect talk_id, created_at, '2. Pregunta del cliente' as tipo, estado, regexp_replace(categoria, '^[0-9]+\\. ', '') as categoria, texto from (select i.*, case when lower(translate(i.texto, 'áéíóúÁÉÍÓÚñÑüÜ', 'aeiouAEIOUnNuU')) ~ 'pago|financ|tarjeta|efectivo' then 'Formas de pago y financiación' when lower(translate(i.texto, 'áéíóúÁÉÍÓÚñÑüÜ', 'aeiouAEIOUnNuU')) ~ 'garantia|incluye|instalada|colocacion|mano de obra|arreglos|yo tengo el material|dentro del precio|proyecto completo' then 'Garantía y qué incluye' when lower(translate(i.texto, 'áéíóúÁÉÍÓÚñÑüÜ', 'aeiouAEIOUnNuU')) ~ 'precio|cuanto|costo|sale |saldria|presupuesto|cotizar|promo|valor' then 'Precio y presupuesto' when lower(translate(i.texto, 'áéíóúÁÉÍÓÚñÑüÜ', 'aeiouAEIOUnNuU')) ~ 'medida|modelo|tamano|profundidad|fibra|\\d x \\d|mas chica|grande|dimensiones' then 'Modelos y medidas' when lower(translate(i.texto, 'áéíóúÁÉÍÓÚñÑüÜ', 'aeiouAEIOUnNuU')) ~ 'revestimiento|piedra|venecita|ceramic|hormigon|cemento|material|especificaciones|venden|luces|sala de maquinas|caneria|cascada|solarium|pintura' then 'Materiales y terminaciones' when lower(translate(i.texto, 'áéíóúÁÉÍÓÚñÑüÜ', 'aeiouAEIOUnNuU')) ~ 'provincia|carlos paz|villa maria|interior|donde son|lugar|de donde|santiago' then 'Zona donde trabajan' when lower(translate(i.texto, 'áéíóúÁÉÍÓÚñÑüÜ', 'aeiouAEIOUnNuU')) ~ 'tiempo|demora|cuando|previsto|arrancar|ejecucion|turno|dia van|16' then 'Plazos de obra' when lower(translate(i.texto, 'áéíóúÁÉÍÓÚñÑüÜ', 'aeiouAEIOUnNuU')) ~ 'foto|ver |visita|terreno|obras en la zona|se lo puede hacer' then 'Visita, fotos y obras hechas' when lower(translate(i.texto, 'áéíóúÁÉÍÓÚñÑüÜ', 'aeiouAEIOUnNuU')) ~ 'arena|respondio|que paso|organizar|aclares|olvides' then 'Seguimiento de obra' when lower(translate(i.texto, 'áéíóúÁÉÍÓÚñÑüÜ', 'aeiouAEIOUnNuU')) ~ 'informacion|detalle|aparte quiero|currículum|curriculum|videollamada|demo' then 'Pide información general' else 'Otra' end as categoria from (select t.talk_id, a.created_at, case when coalesce(a.reservation_status,'') ilike '%confirm%' then 'Confirmada' when a.reservation_status='en_negociacion' then 'En negociacion' when a.reservation_status='sin_avance' then 'Sin avance' when a.reservation_status in ('perdida','cancelada') then 'Perdida' else 'Sin clasificar' end as estado, o->>'question' as texto, coalesce((o->>'answered')::boolean, false) as respondida from wa_latest_audits a join wa_talks t on t.talk_id=a.talk_id, jsonb_array_elements(coalesce(a.unanswered_questions,'[]'::jsonb)) o where ('piscinas-vazquez' = '__all__' OR t.hotel_id = 'piscinas-vazquez') and coalesce((select min(m0.message_created_at) from wa_messages m0 where m0.talk_id=t.talk_id and m0.direction='incoming'), t.first_seen_at) between $__timeFrom() and $__timeTo() and coalesce(a.reservation_status,'') <> 'no_aplica' and coalesce(a.raw_ai_response->>'inquiry_type','') <> 'otro' and jsonb_typeof(o)='object' and lower(coalesce(o->>'asked_by',''))='cliente' and wa_pregunta_del_cliente(t.talk_id, o->>'question')) i where nullif(trim(i.texto),'') is not null) cq\n) x order by talk_id desc, tipo, categoria",
+              "refId": "A"
+            }
+          ],
+          "title": "Objeciones y preguntas, por conversacion",
+          "type": "table"
+        }
+      ],
+      "title": "Detalle: objeciones y preguntas (texto completo)",
+      "type": "row"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 50
+      },
+      "id": 253,
+      "title": "Para trabajar",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "bfz14hr25v6kgd"
+      },
+      "description": "Conversaciones donde el ultimo mensaje registrado es del cliente y todavia no hay respuesta de la empresa despues de ese mensaje. Ordenadas por las que llevan mas tiempo esperando. Fuente: wa_messages (ultimo mensaje entrante vs ultimo saliente). Incluye conversaciones donde lo ultimo fue un \"gracias\" o un emoji del cliente. Filtra por la fecha del ultimo mensaje del cliente dentro del periodo elegido arriba. Solo cuenta consultas comerciales: deja afuera lo que la IA marca como no comercial (CVs, proveedores, chats internos del personal). Verde: menos de 4 h; amarillo: menos de 24 h; naranja: menos de 48 h; rojo: 48 h o mas. Se muestran las 15 que mas esperan.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "decimals": 1,
+          "min": 0,
+          "noValue": "Nadie esperando respuesta",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "#fade2a",
+                "value": 4
+              },
+              {
+                "color": "#ff9830",
+                "value": 24
+              },
+              {
+                "color": "#e02f44",
+                "value": 48
+              }
+            ]
+          },
+          "unit": "h"
+        }
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 0,
+        "y": 51
+      },
+      "id": 217,
+      "options": {
+        "displayMode": "basic",
+        "legend": {
+          "showLegend": false
+        },
+        "maxVizHeight": 28,
+        "minVizHeight": 22,
+        "minVizWidth": 8,
+        "namePlacement": "left",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [],
+          "fields": "/^Horas esperando$/",
+          "limit": 15,
+          "values": true
+        },
+        "showUnfilled": true,
+        "sizing": "manual",
+        "valueMode": "color"
+      },
+      "pluginVersion": "",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "bfz14hr25v6kgd"
+          },
+          "format": "table",
+          "rawSql": "select 'Conv. ' || t.talk_id || '  ·  ' || to_char(x.last_in at time zone 'America/Argentina/Buenos_Aires', 'DD/MM HH24:MI') as \"Conversacion\", round((extract(epoch from (now()-x.last_in))/3600)::numeric,1) as \"Horas esperando\" from wa_talks t cross join lateral (select max(m.message_created_at) filter (where m.direction='incoming') as last_in, max(m.message_created_at) filter (where m.direction='outgoing') as last_out from wa_messages m where m.talk_id=t.talk_id) x left join wa_latest_audits a on a.talk_id=t.talk_id where coalesce(a.reservation_status,'') <> 'no_aplica' and coalesce(a.raw_ai_response->>'inquiry_type','') <> 'otro' and ('piscinas-vazquez' = '__all__' OR t.hotel_id = 'piscinas-vazquez') and x.last_in between $__timeFrom() and $__timeTo() and x.last_in is not null and (x.last_out is null or x.last_out < x.last_in) order by x.last_in asc limit 15",
+          "refId": "A"
+        }
+      ],
+      "title": "El cliente escribio y nadie le contesto (tiempo esperando)",
+      "type": "bargauge"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "bfz14hr25v6kgd"
+      },
+      "description": "Conversaciones que siguen en monitoreo y no llegaron a venta confirmada, ordenadas por dias sin actividad. Fuente: wa_messages (ultimo mensaje de la conversacion) + wa_conversation_audits. Filtra por la fecha de la ultima actividad dentro del periodo elegido arriba. Solo cuenta consultas comerciales: deja afuera lo que la IA marca como no comercial (CVs, proveedores, chats internos del personal). La barra se pone amarilla con 1 dia sin actividad, naranja con 3 y roja con 5.",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "filterable": false
+          },
+          "noValue": "Sin registros todavia"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "talk_id"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Conversacion"
+              },
+              {
+                "id": "custom.width",
+                "value": 110
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Estado"
+            },
+            "properties": [
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "mode": "basic",
+                  "type": "color-background"
+                }
+              },
+              {
+                "id": "custom.width",
+                "value": 150
+              },
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "options": {
+                      "Perdida": {
+                        "color": "#e02f44",
+                        "index": 0
+                      }
+                    },
+                    "type": "value"
+                  },
+                  {
+                    "options": {
+                      "Sin avance": {
+                        "color": "#ff9830",
+                        "index": 1
+                      }
+                    },
+                    "type": "value"
+                  },
+                  {
+                    "options": {
+                      "En negociacion": {
+                        "color": "#fade2a",
+                        "index": 2
+                      }
+                    },
+                    "type": "value"
+                  },
+                  {
+                    "options": {
+                      "Sin clasificar": {
+                        "color": "#8e8e8e",
+                        "index": 3
+                      }
+                    },
+                    "type": "value"
+                  },
+                  {
+                    "options": {
+                      "Confirmada": {
+                        "color": "#56a64b",
+                        "index": 4
+                      }
+                    },
+                    "type": "value"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Dias sin actividad"
+            },
+            "properties": [
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "mode": "basic",
+                  "type": "gauge",
+                  "valueDisplayMode": "text"
+                }
+              },
+              {
+                "id": "unit",
+                "value": "d"
+              },
+              {
+                "id": "decimals",
+                "value": 1
+              },
+              {
+                "id": "min",
+                "value": 0
+              },
+              {
+                "id": "fieldMinMax",
+                "value": true
+              },
+              {
+                "id": "color",
+                "value": {
+                  "mode": "thresholds"
+                }
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "green"
+                    },
+                    {
+                      "color": "#fade2a",
+                      "value": 1
+                    },
+                    {
+                      "color": "#ff9830",
+                      "value": 3
+                    },
+                    {
+                      "color": "#e02f44",
+                      "value": 5
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 12,
+        "y": 51
+      },
+      "id": 218,
+      "options": {
+        "cellHeight": "md",
+        "footer": {
+          "show": false
+        },
+        "showHeader": true
+      },
+      "pluginVersion": "",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "bfz14hr25v6kgd"
+          },
+          "format": "table",
+          "rawSql": "select t.talk_id, case when coalesce(a.reservation_status,'') ilike '%confirm%' then 'Confirmada' when a.reservation_status='en_negociacion' then 'En negociacion' when a.reservation_status='sin_avance' then 'Sin avance' when a.reservation_status in ('perdida','cancelada') then 'Perdida' else 'Sin clasificar' end as \"Estado\", round((extract(epoch from (now()-coalesce((select max(m.message_created_at) from wa_messages m where m.talk_id=t.talk_id),t.first_seen_at)))/86400)::numeric,1) as \"Dias sin actividad\" from wa_talks t left join wa_latest_audits a on a.talk_id=t.talk_id where ('piscinas-vazquez' = '__all__' OR t.hotel_id = 'piscinas-vazquez') and coalesce((select max(m.message_created_at) from wa_messages m where m.talk_id=t.talk_id),t.first_seen_at) between $__timeFrom() and $__timeTo() and t.status='monitoring' and coalesce(a.raw_ai_response->>'inquiry_type','') <> 'otro' and coalesce(a.reservation_status,'') not ilike '%confirm%' and coalesce(a.reservation_status,'') not in ('perdida','cancelada') order by 3 desc limit 50",
+          "refId": "A"
+        }
+      ],
+      "title": "Conversaciones abiertas para retomar",
+      "type": "table"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 60
+      },
+      "id": 254,
+      "title": "Presupuesto declarado por el cliente",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "bfz14hr25v6kgd"
+      },
+      "description": "Conversaciones donde el cliente menciono cuanto quiere/puede gastar, distinto de lo que la empresa cotizo. Lectura de IA sobre el texto; si nunca lo dijo, no se cuenta. Fuente: wa_conversation_audits.guest_budget_mentioned. Solo cuenta consultas comerciales: deja afuera lo que la IA marca como no comercial (CVs, proveedores, chats internos del personal).",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "#3987e5",
+            "mode": "fixed"
+          },
+          "noValue": "0",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
+          },
+          "unit": "locale"
+        }
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 6,
+        "x": 0,
+        "y": 61
+      },
+      "id": 221,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "bfz14hr25v6kgd"
+          },
+          "format": "table",
+          "rawSql": "select count(*) as v from wa_latest_audits a join wa_talks t on t.talk_id=a.talk_id where ('piscinas-vazquez' = '__all__' OR t.hotel_id = 'piscinas-vazquez') and coalesce((select min(m0.message_created_at) from wa_messages m0 where m0.talk_id=t.talk_id and m0.direction='incoming'), t.first_seen_at) between $__timeFrom() and $__timeTo() and coalesce(a.reservation_status,'') <> 'no_aplica' and coalesce(a.raw_ai_response->>'inquiry_type','') <> 'otro' and a.guest_budget_mentioned = true and a.guest_budget_amount is not null",
+          "refId": "A"
+        }
+      ],
+      "title": "Con presupuesto declarado",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "bfz14hr25v6kgd"
+      },
+      "description": "Promedio del presupuesto que declararon los clientes que mencionaron uno. No es un dato exacto, es lo que entendio la IA del texto. Fuente: wa_conversation_audits.guest_budget_amount. Solo cuenta consultas comerciales: deja afuera lo que la IA marca como no comercial (CVs, proveedores, chats internos del personal).",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "#3987e5",
+            "mode": "fixed"
+          },
+          "noValue": "Sin datos",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
+          },
+          "unit": "locale"
+        }
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 6,
+        "x": 6,
+        "y": 61
+      },
+      "id": 222,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "bfz14hr25v6kgd"
+          },
+          "format": "table",
+          "rawSql": "select round(avg(a.guest_budget_amount)::numeric,0) as v from wa_latest_audits a join wa_talks t on t.talk_id=a.talk_id where ('piscinas-vazquez' = '__all__' OR t.hotel_id = 'piscinas-vazquez') and coalesce((select min(m0.message_created_at) from wa_messages m0 where m0.talk_id=t.talk_id and m0.direction='incoming'), t.first_seen_at) between $__timeFrom() and $__timeTo() and coalesce(a.reservation_status,'') <> 'no_aplica' and coalesce(a.raw_ai_response->>'inquiry_type','') <> 'otro' and a.guest_budget_mentioned = true and a.guest_budget_amount is not null",
+          "refId": "A"
+        }
+      ],
+      "title": "Presupuesto promedio declarado",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "bfz14hr25v6kgd"
+      },
+      "description": "De las conversaciones donde el cliente declaro presupuesto Y la empresa cotizo un precio, cuantas veces lo cotizado quedo por encima de lo que el cliente dijo que queria gastar. Util para ver si el problema de cierre es de precio. Fuente: wa_conversation_audits.guest_budget_amount vs quoted_price. Solo cuenta consultas comerciales: deja afuera lo que la IA marca como no comercial (CVs, proveedores, chats internos del personal).",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "#3987e5",
+            "mode": "fixed"
+          },
+          "noValue": "0",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              }
+            ]
+          },
+          "unit": "locale"
+        }
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 6,
+        "x": 12,
+        "y": 61
+      },
+      "id": 223,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "bfz14hr25v6kgd"
+          },
+          "format": "table",
+          "rawSql": "select count(*) as v from wa_latest_audits a join wa_talks t on t.talk_id=a.talk_id where ('piscinas-vazquez' = '__all__' OR t.hotel_id = 'piscinas-vazquez') and coalesce((select min(m0.message_created_at) from wa_messages m0 where m0.talk_id=t.talk_id and m0.direction='incoming'), t.first_seen_at) between $__timeFrom() and $__timeTo() and coalesce(a.reservation_status,'') <> 'no_aplica' and coalesce(a.raw_ai_response->>'inquiry_type','') <> 'otro' and a.guest_budget_mentioned = true and a.guest_budget_amount is not null and a.quoted_price is not null and a.quoted_price > a.guest_budget_amount",
+          "refId": "A"
+        }
+      ],
+      "title": "Cotizado por encima del presupuesto",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "bfz14hr25v6kgd"
+      },
+      "description": "Listado de conversaciones donde el cliente declaro un presupuesto, comparado con lo que la empresa termino cotizando. Fuente: wa_conversation_audits. Solo cuenta consultas comerciales: deja afuera lo que la IA marca como no comercial (CVs, proveedores, chats internos del personal).",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto",
+              "wrapText": true
+            },
+            "filterable": false
+          },
+          "noValue": "Sin registros todavia"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "talk_id"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 70
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Talk"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 70
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Auditado"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 135
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Consultas"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 90
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Cerradas"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 85
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Veces"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 70
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Veces sin responder"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 110
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Horas esperando"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 110
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Dias sin actividad"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 120
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 6,
+        "x": 18,
+        "y": 61
+      },
+      "id": 224,
+      "options": {
+        "cellHeight": "md",
+        "footer": {
+          "show": false
+        },
+        "showHeader": true
+      },
+      "pluginVersion": "",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "bfz14hr25v6kgd"
+          },
+          "format": "table",
+          "rawSql": "select t.talk_id as \"Talk\", a.guest_budget_amount as \"Presupuesto\", a.guest_budget_currency as \"Moneda\", a.quoted_price as \"Cotizado\", a.quoted_currency as \"Moneda cotizada\" from wa_latest_audits a join wa_talks t on t.talk_id=a.talk_id where ('piscinas-vazquez' = '__all__' OR t.hotel_id = 'piscinas-vazquez') and coalesce((select min(m0.message_created_at) from wa_messages m0 where m0.talk_id=t.talk_id and m0.direction='incoming'), t.first_seen_at) between $__timeFrom() and $__timeTo() and coalesce(a.reservation_status,'') <> 'no_aplica' and coalesce(a.raw_ai_response->>'inquiry_type','') <> 'otro' and a.guest_budget_mentioned = true and a.guest_budget_amount is not null order by a.created_at desc limit 20",
+          "refId": "A"
+        }
+      ],
+      "title": "Detalle presupuesto vs cotizado",
+      "type": "table"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 69
+      },
+      "id": 255,
+      "title": "Embudo completo y calidad",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "bfz14hr25v6kgd"
+      },
+      "description": "En que estado quedo cada conversacion segun la lectura de la IA (consulto, cotizo, compro, no avanzo, etc.), no solo confirmada/no confirmada. Fuente: wa_conversation_audits.reservation_status.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "#898781",
+            "mode": "fixed"
+          },
+          "unit": "none"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Confirmada"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "#0ca30c",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "En negociacion"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "#3987e5",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Sin avance"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "#fab219",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Perdida"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "#d03b3b",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Sin clasificar"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "#898781",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 0,
+        "y": 70
+      },
+      "id": 226,
+      "options": {
+        "displayLabels": [
+          "percent"
+        ],
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true,
+          "values": [
+            "value"
+          ]
+        },
+        "pieType": "donut",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "bfz14hr25v6kgd"
+          },
+          "format": "table",
+          "rawSql": "select case when coalesce(a.reservation_status,'') ilike '%confirm%' then 'Confirmada' when a.reservation_status='en_negociacion' then 'En negociacion' when a.reservation_status='sin_avance' then 'Sin avance' when a.reservation_status in ('perdida','cancelada') then 'Perdida' else 'Sin clasificar' end as \"Estado\", count(*) as \"Conversaciones\"\nfrom wa_latest_audits a join wa_talks t on t.talk_id=a.talk_id\nwhere ('piscinas-vazquez' = '__all__' OR t.hotel_id = 'piscinas-vazquez') and coalesce((select min(m0.message_created_at) from wa_messages m0 where m0.talk_id=t.talk_id and m0.direction='incoming'), t.first_seen_at) between $__timeFrom() and $__timeTo()\ngroup by 1 order by 2 desc",
+          "refId": "A"
+        }
+      ],
+      "title": "Embudo comercial (estado de venta)",
+      "type": "piechart"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "bfz14hr25v6kgd"
+      },
+      "description": "Puntaje 0-100 que la IA asigna a la calidad de atencion, promediado. Fuente: wa_conversation_audits.attention_score. Solo cuenta consultas comerciales: deja afuera lo que la IA marca como no comercial (CVs, proveedores, chats internos del personal).",
+      "fieldConfig": {
+        "defaults": {
+          "max": 100,
+          "min": 0,
+          "noValue": "Sin datos",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#d03b3b",
+                "value": null
+              },
+              {
+                "color": "#fab219",
+                "value": 40
+              },
+              {
+                "color": "#0ca30c",
+                "value": 70
+              }
+            ]
+          },
+          "unit": "none"
+        }
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 4,
+        "x": 8,
+        "y": 70
+      },
+      "id": 227,
+      "options": {
+        "minVizHeight": 60,
+        "minVizWidth": 8,
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "sizing": "auto"
+      },
+      "pluginVersion": "",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "bfz14hr25v6kgd"
+          },
+          "format": "table",
+          "rawSql": "select round(avg(a.attention_score)::numeric,1) as v from wa_latest_audits a join wa_talks t on t.talk_id=a.talk_id where ('piscinas-vazquez' = '__all__' OR t.hotel_id = 'piscinas-vazquez') and coalesce((select min(m0.message_created_at) from wa_messages m0 where m0.talk_id=t.talk_id and m0.direction='incoming'), t.first_seen_at) between $__timeFrom() and $__timeTo() and coalesce(a.reservation_status,'') <> 'no_aplica' and coalesce(a.raw_ai_response->>'inquiry_type','') <> 'otro'",
+          "refId": "A"
+        }
+      ],
+      "title": "Atencion",
+      "type": "gauge"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "bfz14hr25v6kgd"
+      },
+      "description": "Puntaje 0-100 que la IA asigna a que tan cerca quedo la conversacion de una venta confirmada, promediado. Fuente: wa_conversation_audits.closure_score. Solo cuenta consultas comerciales: deja afuera lo que la IA marca como no comercial (CVs, proveedores, chats internos del personal).",
+      "fieldConfig": {
+        "defaults": {
+          "max": 100,
+          "min": 0,
+          "noValue": "Sin datos",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#d03b3b",
+                "value": null
+              },
+              {
+                "color": "#fab219",
+                "value": 40
+              },
+              {
+                "color": "#0ca30c",
+                "value": 70
+              }
+            ]
+          },
+          "unit": "none"
+        }
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 4,
+        "x": 12,
+        "y": 70
+      },
+      "id": 228,
+      "options": {
+        "minVizHeight": 60,
+        "minVizWidth": 8,
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "sizing": "auto"
+      },
+      "pluginVersion": "",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "bfz14hr25v6kgd"
+          },
+          "format": "table",
+          "rawSql": "select round(avg(a.closure_score)::numeric,1) as v from wa_latest_audits a join wa_talks t on t.talk_id=a.talk_id where ('piscinas-vazquez' = '__all__' OR t.hotel_id = 'piscinas-vazquez') and coalesce((select min(m0.message_created_at) from wa_messages m0 where m0.talk_id=t.talk_id and m0.direction='incoming'), t.first_seen_at) between $__timeFrom() and $__timeTo() and coalesce(a.reservation_status,'') <> 'no_aplica' and coalesce(a.raw_ai_response->>'inquiry_type','') <> 'otro'",
+          "refId": "A"
+        }
+      ],
+      "title": "Cierre",
+      "type": "gauge"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "bfz14hr25v6kgd"
+      },
+      "description": "Promedio de minutos de horario laboral hasta la primera respuesta de una conversacion nueva. Se mide desde el PRIMER mensaje del cliente que quedo sin responder hasta la primera respuesta de una persona del equipo; las bienvenidas automaticas de Kommo no cuentan como respuesta. Se descartan los turnos donde el cliente solo dijo 'gracias', 'ok' o similar, y las conversaciones que la IA marca como no comerciales. Filtra por la fecha en que escribio el cliente dentro del periodo elegido arriba. Fuente: wa_response_turns (calculado de wa_messages, se actualiza cada 30 min). Horario laboral: lunes a viernes de 9 a 18 h y sabado de 10 a 15 h (hora de Argentina); domingos y feriados cargados en wa_holidays no cuentan.",
+      "fieldConfig": {
+        "defaults": {
+          "noValue": "Sin datos",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#0ca30c",
+                "value": null
+              },
+              {
+                "color": "#fab219",
+                "value": 30
+              },
+              {
+                "color": "#ec835a",
+                "value": 60
+              },
+              {
+                "color": "#d03b3b",
+                "value": 240
+              }
+            ]
+          },
+          "unit": "m"
+        }
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 4,
+        "x": 16,
+        "y": 70
+      },
+      "id": 229,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "bfz14hr25v6kgd"
+          },
+          "format": "table",
+          "rawSql": "select round((avg(r.business_seconds) / 60.0)::numeric, 1) as v from wa_response_turns r left join wa_latest_audits a on a.talk_id = r.talk_id where ('piscinas-vazquez' = '__all__' OR r.hotel_id = 'piscinas-vazquez') and not r.trivial and r.asked_at between $__timeFrom() and $__timeTo() and coalesce(a.reservation_status,'') <> 'no_aplica' and coalesce(a.raw_ai_response->>'inquiry_type','') <> 'otro' and r.responded_at is not null and r.is_first_turn",
+          "refId": "A"
+        }
+      ],
+      "title": "1ra resp. (prom., habil)",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "bfz14hr25v6kgd"
+      },
+      "description": "La primera respuesta mas lenta del periodo, en minutos de horario laboral. Se mide desde el PRIMER mensaje del cliente que quedo sin responder hasta la primera respuesta de una persona del equipo; las bienvenidas automaticas de Kommo no cuentan como respuesta. Se descartan los turnos donde el cliente solo dijo 'gracias', 'ok' o similar, y las conversaciones que la IA marca como no comerciales. Filtra por la fecha en que escribio el cliente dentro del periodo elegido arriba. Fuente: wa_response_turns (calculado de wa_messages, se actualiza cada 30 min). Horario laboral: lunes a viernes de 9 a 18 h y sabado de 10 a 15 h (hora de Argentina); domingos y feriados cargados en wa_holidays no cuentan.",
+      "fieldConfig": {
+        "defaults": {
+          "noValue": "Sin datos",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#0ca30c",
+                "value": null
+              },
+              {
+                "color": "#fab219",
+                "value": 30
+              },
+              {
+                "color": "#ec835a",
+                "value": 60
+              },
+              {
+                "color": "#d03b3b",
+                "value": 240
+              }
+            ]
+          },
+          "unit": "m"
+        }
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 4,
+        "x": 20,
+        "y": 70
+      },
+      "id": 230,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "bfz14hr25v6kgd"
+          },
+          "format": "table",
+          "rawSql": "select round((max(r.business_seconds) / 60.0)::numeric, 1) as v from wa_response_turns r left join wa_latest_audits a on a.talk_id = r.talk_id where ('piscinas-vazquez' = '__all__' OR r.hotel_id = 'piscinas-vazquez') and not r.trivial and r.asked_at between $__timeFrom() and $__timeTo() and coalesce(a.reservation_status,'') <> 'no_aplica' and coalesce(a.raw_ai_response->>'inquiry_type','') <> 'otro' and r.responded_at is not null and r.is_first_turn",
+          "refId": "A"
+        }
+      ],
+      "title": "1ra resp. (peor, habil)",
+      "type": "stat"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 78
+      },
+      "id": 256,
+      "title": "Que dice la IA que funciona o no",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "bfz14hr25v6kgd"
+      },
+      "description": "Cada conversacion se cuenta una sola vez, en la senal positiva MAS fuerte que detecto la IA. Sirve para ver cuantos estan cerca de cerrar. Cada frase que escribio la IA se agrupa en una categoria por palabras clave (sin IA extra, sin inventar); el texto original esta en la fila 'Detalle'. Solo cuenta consultas comerciales: deja afuera lo que la IA marca como no comercial (CVs, proveedores, chats internos del personal).",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "#56a64b",
+            "mode": "fixed"
+          },
+          "custom": {
+            "axisPlacement": "auto",
+            "axisSoftMin": 0,
+            "fillOpacity": 85,
+            "gradientMode": "none",
+            "lineWidth": 0
+          },
+          "decimals": 0,
+          "min": 0,
+          "unit": "none"
+        }
+      },
+      "gridPos": {
+        "h": 11,
+        "w": 7,
+        "x": 0,
+        "y": 79
+      },
+      "id": 241,
+      "options": {
+        "barWidth": 0.7,
+        "groupWidth": 0.7,
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "orientation": "horizontal",
+        "showValue": "always",
+        "stacking": "none",
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        },
+        "xTickLabelMaxLength": 0,
+        "xTickLabelRotation": 0
+      },
+      "pluginVersion": "",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "bfz14hr25v6kgd"
+          },
+          "format": "table",
+          "rawSql": "select regexp_replace(categoria, '^[0-9]+\\. ', '') as \"Hasta donde llego\", count(*) as \"Conversaciones\"\nfrom (select talk_id, min(categoria) as categoria from (select i.*, case when lower(translate(i.texto, 'áéíóúÁÉÍÓÚñÑüÜ', 'aeiouAEIOUnNuU')) ~ 'contrato|anticipo|transferencia|entrega de dinero|pago parcial|acept\\w* (la propuesta|medidas|diseno)|20%' then '1. Firmó o pagó anticipo' when lower(translate(i.texto, 'áéíóúÁÉÍÓÚñÑüÜ', 'aeiouAEIOUnNuU')) ~ 'visita|reunion|llamada' then '2. Aceptó visita técnica' when lower(translate(i.texto, 'áéíóúÁÉÍÓÚñÑüÜ', 'aeiouAEIOUnNuU')) ~ 'medidas|ubicacion|terreno|\\dx\\d|especific' then '3. Dio medidas' when lower(translate(i.texto, 'áéíóúÁÉÍÓÚñÑüÜ', 'aeiouAEIOUnNuU')) ~ 'cotiz|presupuesto|precio|informacion|propuesta|financ|pago|revestimiento|simulac|alternativ|interes|numeros|comparando' then '4. Pidió presupuesto' when lower(translate(i.texto, 'áéíóúÁÉÍÓÚñÑüÜ', 'aeiouAEIOUnNuU')) ~ 'analiz|pareja|marido|esposa|arquitecto|revisara|avisara|considerando|volver a contactar|retomar' then '5. Lo va a analizar' when lower(translate(i.texto, 'áéíóúÁÉÍÓÚñÑüÜ', 'aeiouAEIOUnNuU')) ~ 'encanta|buenisimo|lindas|emojis|agradec|positiv|entusiasmo|definir pronto|disposicion|decidido|reputacion' then '6. Mostró entusiasmo' when lower(translate(i.texto, 'áéíóúÁÉÍÓÚñÑüÜ', 'aeiouAEIOUnNuU')) ~ 'avance|pintura|arena|cuadrillas|plano|documentacion|certific|obra|desborde|excavacion|lluvia' then '7. Obra en curso' else '8. Otra señal' end as categoria from (select t.talk_id, a.created_at, case when coalesce(a.reservation_status,'') ilike '%confirm%' then 'Confirmada' when a.reservation_status='en_negociacion' then 'En negociacion' when a.reservation_status='sin_avance' then 'Sin avance' when a.reservation_status in ('perdida','cancelada') then 'Perdida' else 'Sin clasificar' end as estado, case jsonb_typeof(o) when 'object' then coalesce(o->>'signal', o->>'detail', o #>> '{}') else o #>> '{}' end as texto, o->>'priority' as prioridad from wa_latest_audits a join wa_talks t on t.talk_id=a.talk_id, jsonb_array_elements(coalesce(a.positive_signals,'[]'::jsonb)) o where ('piscinas-vazquez' = '__all__' OR t.hotel_id = 'piscinas-vazquez') and coalesce((select min(m0.message_created_at) from wa_messages m0 where m0.talk_id=t.talk_id and m0.direction='incoming'), t.first_seen_at) between $__timeFrom() and $__timeTo() and coalesce(a.reservation_status,'') <> 'no_aplica' and coalesce(a.raw_ai_response->>'inquiry_type','') <> 'otro') i where nullif(trim(i.texto),'') is not null) c group by talk_id) b group by categoria order by categoria",
+          "refId": "A"
+        }
+      ],
+      "title": "Hasta donde llego cada cliente",
+      "type": "barchart"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "bfz14hr25v6kgd"
+      },
+      "description": "Conversaciones donde la IA detecto cada tipo de oportunidad perdida (una conversacion puede tener varias). Cada frase que escribio la IA se agrupa en una categoria por palabras clave (sin IA extra, sin inventar); el texto original esta en la fila 'Detalle'. Solo cuenta consultas comerciales: deja afuera lo que la IA marca como no comercial (CVs, proveedores, chats internos del personal).",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "#e0752d",
+            "mode": "fixed"
+          },
+          "custom": {
+            "axisPlacement": "auto",
+            "axisSoftMin": 0,
+            "fillOpacity": 85,
+            "gradientMode": "none",
+            "lineWidth": 0
+          },
+          "decimals": 0,
+          "min": 0,
+          "unit": "none"
+        }
+      },
+      "gridPos": {
+        "h": 11,
+        "w": 8,
+        "x": 7,
+        "y": 79
+      },
+      "id": 242,
+      "options": {
+        "barWidth": 0.7,
+        "groupWidth": 0.7,
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "orientation": "horizontal",
+        "showValue": "always",
+        "stacking": "none",
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        },
+        "xTickLabelMaxLength": 0,
+        "xTickLabelRotation": 0
+      },
+      "pluginVersion": "",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "bfz14hr25v6kgd"
+          },
+          "format": "table",
+          "rawSql": "select categoria as \"Donde se pierde\", count(distinct talk_id) as \"Conversaciones\" from (select i.*, case when lower(translate(i.texto, 'áéíóúÁÉÍÓÚñÑüÜ', 'aeiouAEIOUnNuU')) ~ 'respond|solucion|compensacion|no se avanzo en la entrega|videollamada|demo|no se confirmo solucion' then 'No respondió al cliente' when lower(translate(i.texto, 'áéíóúÁÉÍÓÚñÑüÜ', 'aeiouAEIOUnNuU')) ~ 'visita|terreno' then 'No concretó la visita técnica' when lower(translate(i.texto, 'áéíóúÁÉÍÓÚñÑüÜ', 'aeiouAEIOUnNuU')) ~ 'pago|financ|economic|ajuste en el presupuesto' then 'No habló de pago ni financiación' when lower(translate(i.texto, 'áéíóúÁÉÍÓÚñÑüÜ', 'aeiouAEIOUnNuU')) ~ 'medidas|detalles|ubicacion|preferencias|tipo de obra|uso especifico|necesidad|repreguntar|presupuesto limite|medida' then 'No pidió medidas ni detalles' when lower(translate(i.texto, 'áéíóúÁÉÍÓÚñÑüÜ', 'aeiouAEIOUnNuU')) ~ 'extras|equipamiento|alternativ|tipos de piscina|propuestas adicionales|acorde|otros? servicios?|mantenimiento|filtrado|revestimientos|opciones de diseno' then 'No ofreció extras ni alternativas' when lower(translate(i.texto, 'áéíóúÁÉÍÓÚñÑüÜ', 'aeiouAEIOUnNuU')) ~ 'presupuesto formal|cotizacion|oferta|presupuesto' then 'No dio presupuesto formal' when lower(translate(i.texto, 'áéíóúÁÉÍÓÚñÑüÜ', 'aeiouAEIOUnNuU')) ~ 'cerrar|anticipo|fecha|plazo|seguimiento|seguir la conversacion|insistido' then 'No cerró la venta' when lower(translate(i.texto, 'áéíóúÁÉÍÓÚñÑüÜ', 'aeiouAEIOUnNuU')) ~ 'avance|certificado|cascada' then 'Obra en curso' else 'Otra' end as categoria from (select t.talk_id, a.created_at, case when coalesce(a.reservation_status,'') ilike '%confirm%' then 'Confirmada' when a.reservation_status='en_negociacion' then 'En negociacion' when a.reservation_status='sin_avance' then 'Sin avance' when a.reservation_status in ('perdida','cancelada') then 'Perdida' else 'Sin clasificar' end as estado, case jsonb_typeof(o) when 'object' then coalesce(o->>'opportunity', o->>'action', o->>'detail', o->>'description', o #>> '{}') else o #>> '{}' end as texto, o->>'priority' as prioridad from wa_latest_audits a join wa_talks t on t.talk_id=a.talk_id, jsonb_array_elements(coalesce(a.missed_opportunities,'[]'::jsonb)) o where ('piscinas-vazquez' = '__all__' OR t.hotel_id = 'piscinas-vazquez') and coalesce((select min(m0.message_created_at) from wa_messages m0 where m0.talk_id=t.talk_id and m0.direction='incoming'), t.first_seen_at) between $__timeFrom() and $__timeTo() and coalesce(a.reservation_status,'') <> 'no_aplica' and coalesce(a.raw_ai_response->>'inquiry_type','') <> 'otro') i where nullif(trim(i.texto),'') is not null) c group by 1 order by (categoria = 'Otra'), 2 desc, 1",
+          "refId": "A"
+        }
+      ],
+      "title": "En que se pierden ventas",
+      "type": "barchart"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "bfz14hr25v6kgd"
+      },
+      "description": "Conversaciones donde la IA recomienda cada accion, separadas por la prioridad que le asigno. Entre parentesis, el total. Cada frase que escribio la IA se agrupa en una categoria por palabras clave (sin IA extra, sin inventar); el texto original esta en la fila 'Detalle'. Solo cuenta consultas comerciales: deja afuera lo que la IA marca como no comercial (CVs, proveedores, chats internos del personal).",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "#3987e5",
+            "mode": "fixed"
+          },
+          "custom": {
+            "axisPlacement": "auto",
+            "axisSoftMin": 0,
+            "fillOpacity": 85,
+            "gradientMode": "none",
+            "lineWidth": 0
+          },
+          "decimals": 0,
+          "min": 0,
+          "unit": "none"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Prioridad alta"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "#e02f44",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Prioridad media/baja"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "#fade2a",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 11,
+        "w": 9,
+        "x": 15,
+        "y": 79
+      },
+      "id": 243,
+      "options": {
+        "barWidth": 0.7,
+        "groupWidth": 0.7,
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "orientation": "horizontal",
+        "showValue": "never",
+        "stacking": "normal",
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        },
+        "xTickLabelMaxLength": 0,
+        "xTickLabelRotation": 0
+      },
+      "pluginVersion": "",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "bfz14hr25v6kgd"
+          },
+          "format": "table",
+          "rawSql": "select categoria || '  (' || count(*) || ')' as \"Que hacer\", nullif(count(*) filter (where alta), 0) as \"Prioridad alta\", nullif(count(*) filter (where not alta), 0) as \"Prioridad media/baja\"\nfrom (select talk_id, categoria, bool_or(lower(coalesce(prioridad,'')) = 'alta') as alta from (select i.*, case when lower(translate(i.texto, 'áéíóúÁÉÍÓÚñÑüÜ', 'aeiouAEIOUnNuU')) ~ '^responder|^contestar|aclarar|resolver|dudas|consulta|especificaciones|informacion|interior de la provincia|santiago|colores|costo del' then 'Responder consultas pendientes' when lower(translate(i.texto, 'áéíóúÁÉÍÓÚñÑüÜ', 'aeiouAEIOUnNuU')) ~ 'visita|terreno' then 'Coordinar la visita técnica' when lower(translate(i.texto, 'áéíóúÁÉÍÓÚñÑüÜ', 'aeiouAEIOUnNuU')) ~ 'equipamiento|extras|mantenimiento|adicional' then 'Ofrecer extras' when lower(translate(i.texto, 'áéíóúÁÉÍÓÚñÑüÜ', 'aeiouAEIOUnNuU')) ~ 'financ|pago|alternativ|economic|sin revestimiento|ajuste' then 'Ofrecer financiación' when lower(translate(i.texto, 'áéíóúÁÉÍÓÚñÑüÜ', 'aeiouAEIOUnNuU')) ~ 'medidas|ubicacion|localidad|detalles del proyecto|detalles especificos|nombre|presupuesto estimado|tipos de obras|tipo de arreglo' then 'Pedir medidas y ubicación' when lower(translate(i.texto, 'áéíóúÁÉÍÓÚñÑüÜ', 'aeiouAEIOUnNuU')) ~ 'presupuesto|propuesta|cotizacion|simulacion' then 'Enviar presupuesto o propuesta' when lower(translate(i.texto, 'áéíóúÁÉÍÓÚñÑüÜ', 'aeiouAEIOUnNuU')) ~ 'seguimiento|cerrar|concretar|contacto|recordar|impulsar|decision|interes' then 'Hacer seguimiento para cerrar' when lower(translate(i.texto, 'áéíóúÁÉÍÓÚñÑüÜ', 'aeiouAEIOUnNuU')) ~ 'avance|certificado|documentacion|obra|inicio|cascada|cuadrilla|plano|contrato' then 'Seguir la obra en curso' else 'Otra' end as categoria from (select t.talk_id, a.created_at, case when coalesce(a.reservation_status,'') ilike '%confirm%' then 'Confirmada' when a.reservation_status='en_negociacion' then 'En negociacion' when a.reservation_status='sin_avance' then 'Sin avance' when a.reservation_status in ('perdida','cancelada') then 'Perdida' else 'Sin clasificar' end as estado, case jsonb_typeof(o) when 'object' then coalesce(o->>'action', o->>'recommendation', o->>'detail', o #>> '{}') else o #>> '{}' end as texto, o->>'priority' as prioridad from wa_latest_audits a join wa_talks t on t.talk_id=a.talk_id, jsonb_array_elements(coalesce(a.recommended_actions,'[]'::jsonb)) o where ('piscinas-vazquez' = '__all__' OR t.hotel_id = 'piscinas-vazquez') and coalesce((select min(m0.message_created_at) from wa_messages m0 where m0.talk_id=t.talk_id and m0.direction='incoming'), t.first_seen_at) between $__timeFrom() and $__timeTo() and coalesce(a.reservation_status,'') <> 'no_aplica' and coalesce(a.raw_ai_response->>'inquiry_type','') <> 'otro') i where nullif(trim(i.texto),'') is not null) c group by 1,2) b group by categoria order by (categoria = 'Otra'), count(*) desc, categoria",
+          "refId": "A"
+        }
+      ],
+      "title": "Que tiene que hacer el equipo",
+      "type": "barchart"
+    },
+    {
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 90
+      },
+      "id": 257,
+      "panels": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "bfz14hr25v6kgd"
+          },
+          "description": "Texto original detras de los 3 graficos de arriba, con la categoria asignada. Cada frase que escribio la IA se agrupa en una categoria por palabras clave (sin IA extra, sin inventar); el texto original esta en la fila 'Detalle'. Solo cuenta consultas comerciales: deja afuera lo que la IA marca como no comercial (CVs, proveedores, chats internos del personal).",
+          "fieldConfig": {
+            "defaults": {
+              "custom": {
+                "align": "auto",
+                "cellOptions": {
+                  "type": "auto",
+                  "wrapText": true
+                },
+                "filterable": true
+              },
+              "noValue": "Sin registros todavia"
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Conversacion"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 100
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Auditado"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 150
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Tipo"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 170
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Estado"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 130
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Categoria"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 260
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 12,
+            "w": 24,
+            "x": 0,
+            "y": 91
+          },
+          "id": 247,
+          "options": {
+            "cellHeight": "md",
+            "footer": {
+              "show": false
+            },
+            "showHeader": true
+          },
+          "pluginVersion": "",
+          "targets": [
+            {
+              "datasource": {
+                "type": "postgres",
+                "uid": "bfz14hr25v6kgd"
+              },
+              "format": "table",
+              "rawSql": "select talk_id as \"Conversacion\", created_at as \"Auditado\", regexp_replace(tipo, '^[0-9]+\\. ', '') as \"Tipo\", estado as \"Estado\", categoria as \"Categoria\", texto as \"Lo que escribio la IA\" from (\nselect talk_id, created_at, '1. Senal positiva' as tipo, estado, regexp_replace(categoria, '^[0-9]+\\. ', '') as categoria, texto from (select i.*, case when lower(translate(i.texto, 'áéíóúÁÉÍÓÚñÑüÜ', 'aeiouAEIOUnNuU')) ~ 'contrato|anticipo|transferencia|entrega de dinero|pago parcial|acept\\w* (la propuesta|medidas|diseno)|20%' then '1. Firmó o pagó anticipo' when lower(translate(i.texto, 'áéíóúÁÉÍÓÚñÑüÜ', 'aeiouAEIOUnNuU')) ~ 'visita|reunion|llamada' then '2. Aceptó visita técnica' when lower(translate(i.texto, 'áéíóúÁÉÍÓÚñÑüÜ', 'aeiouAEIOUnNuU')) ~ 'medidas|ubicacion|terreno|\\dx\\d|especific' then '3. Dio medidas' when lower(translate(i.texto, 'áéíóúÁÉÍÓÚñÑüÜ', 'aeiouAEIOUnNuU')) ~ 'cotiz|presupuesto|precio|informacion|propuesta|financ|pago|revestimiento|simulac|alternativ|interes|numeros|comparando' then '4. Pidió presupuesto' when lower(translate(i.texto, 'áéíóúÁÉÍÓÚñÑüÜ', 'aeiouAEIOUnNuU')) ~ 'analiz|pareja|marido|esposa|arquitecto|revisara|avisara|considerando|volver a contactar|retomar' then '5. Lo va a analizar' when lower(translate(i.texto, 'áéíóúÁÉÍÓÚñÑüÜ', 'aeiouAEIOUnNuU')) ~ 'encanta|buenisimo|lindas|emojis|agradec|positiv|entusiasmo|definir pronto|disposicion|decidido|reputacion' then '6. Mostró entusiasmo' when lower(translate(i.texto, 'áéíóúÁÉÍÓÚñÑüÜ', 'aeiouAEIOUnNuU')) ~ 'avance|pintura|arena|cuadrillas|plano|documentacion|certific|obra|desborde|excavacion|lluvia' then '7. Obra en curso' else '8. Otra señal' end as categoria from (select t.talk_id, a.created_at, case when coalesce(a.reservation_status,'') ilike '%confirm%' then 'Confirmada' when a.reservation_status='en_negociacion' then 'En negociacion' when a.reservation_status='sin_avance' then 'Sin avance' when a.reservation_status in ('perdida','cancelada') then 'Perdida' else 'Sin clasificar' end as estado, case jsonb_typeof(o) when 'object' then coalesce(o->>'signal', o->>'detail', o #>> '{}') else o #>> '{}' end as texto, o->>'priority' as prioridad from wa_latest_audits a join wa_talks t on t.talk_id=a.talk_id, jsonb_array_elements(coalesce(a.positive_signals,'[]'::jsonb)) o where ('piscinas-vazquez' = '__all__' OR t.hotel_id = 'piscinas-vazquez') and coalesce((select min(m0.message_created_at) from wa_messages m0 where m0.talk_id=t.talk_id and m0.direction='incoming'), t.first_seen_at) between $__timeFrom() and $__timeTo() and coalesce(a.reservation_status,'') <> 'no_aplica' and coalesce(a.raw_ai_response->>'inquiry_type','') <> 'otro') i where nullif(trim(i.texto),'') is not null) cpos\nunion all\nselect talk_id, created_at, '2. Oportunidad perdida' as tipo, estado, regexp_replace(categoria, '^[0-9]+\\. ', '') as categoria, texto from (select i.*, case when lower(translate(i.texto, 'áéíóúÁÉÍÓÚñÑüÜ', 'aeiouAEIOUnNuU')) ~ 'respond|solucion|compensacion|no se avanzo en la entrega|videollamada|demo|no se confirmo solucion' then 'No respondió al cliente' when lower(translate(i.texto, 'áéíóúÁÉÍÓÚñÑüÜ', 'aeiouAEIOUnNuU')) ~ 'visita|terreno' then 'No concretó la visita técnica' when lower(translate(i.texto, 'áéíóúÁÉÍÓÚñÑüÜ', 'aeiouAEIOUnNuU')) ~ 'pago|financ|economic|ajuste en el presupuesto' then 'No habló de pago ni financiación' when lower(translate(i.texto, 'áéíóúÁÉÍÓÚñÑüÜ', 'aeiouAEIOUnNuU')) ~ 'medidas|detalles|ubicacion|preferencias|tipo de obra|uso especifico|necesidad|repreguntar|presupuesto limite|medida' then 'No pidió medidas ni detalles' when lower(translate(i.texto, 'áéíóúÁÉÍÓÚñÑüÜ', 'aeiouAEIOUnNuU')) ~ 'extras|equipamiento|alternativ|tipos de piscina|propuestas adicionales|acorde|otros? servicios?|mantenimiento|filtrado|revestimientos|opciones de diseno' then 'No ofreció extras ni alternativas' when lower(translate(i.texto, 'áéíóúÁÉÍÓÚñÑüÜ', 'aeiouAEIOUnNuU')) ~ 'presupuesto formal|cotizacion|oferta|presupuesto' then 'No dio presupuesto formal' when lower(translate(i.texto, 'áéíóúÁÉÍÓÚñÑüÜ', 'aeiouAEIOUnNuU')) ~ 'cerrar|anticipo|fecha|plazo|seguimiento|seguir la conversacion|insistido' then 'No cerró la venta' when lower(translate(i.texto, 'áéíóúÁÉÍÓÚñÑüÜ', 'aeiouAEIOUnNuU')) ~ 'avance|certificado|cascada' then 'Obra en curso' else 'Otra' end as categoria from (select t.talk_id, a.created_at, case when coalesce(a.reservation_status,'') ilike '%confirm%' then 'Confirmada' when a.reservation_status='en_negociacion' then 'En negociacion' when a.reservation_status='sin_avance' then 'Sin avance' when a.reservation_status in ('perdida','cancelada') then 'Perdida' else 'Sin clasificar' end as estado, case jsonb_typeof(o) when 'object' then coalesce(o->>'opportunity', o->>'action', o->>'detail', o->>'description', o #>> '{}') else o #>> '{}' end as texto, o->>'priority' as prioridad from wa_latest_audits a join wa_talks t on t.talk_id=a.talk_id, jsonb_array_elements(coalesce(a.missed_opportunities,'[]'::jsonb)) o where ('piscinas-vazquez' = '__all__' OR t.hotel_id = 'piscinas-vazquez') and coalesce((select min(m0.message_created_at) from wa_messages m0 where m0.talk_id=t.talk_id and m0.direction='incoming'), t.first_seen_at) between $__timeFrom() and $__timeTo() and coalesce(a.reservation_status,'') <> 'no_aplica' and coalesce(a.raw_ai_response->>'inquiry_type','') <> 'otro') i where nullif(trim(i.texto),'') is not null) copp\nunion all\nselect talk_id, created_at, '3. Accion recomendada' as tipo, estado, regexp_replace(categoria, '^[0-9]+\\. ', '') as categoria, texto from (select i.*, case when lower(translate(i.texto, 'áéíóúÁÉÍÓÚñÑüÜ', 'aeiouAEIOUnNuU')) ~ '^responder|^contestar|aclarar|resolver|dudas|consulta|especificaciones|informacion|interior de la provincia|santiago|colores|costo del' then 'Responder consultas pendientes' when lower(translate(i.texto, 'áéíóúÁÉÍÓÚñÑüÜ', 'aeiouAEIOUnNuU')) ~ 'visita|terreno' then 'Coordinar la visita técnica' when lower(translate(i.texto, 'áéíóúÁÉÍÓÚñÑüÜ', 'aeiouAEIOUnNuU')) ~ 'equipamiento|extras|mantenimiento|adicional' then 'Ofrecer extras' when lower(translate(i.texto, 'áéíóúÁÉÍÓÚñÑüÜ', 'aeiouAEIOUnNuU')) ~ 'financ|pago|alternativ|economic|sin revestimiento|ajuste' then 'Ofrecer financiación' when lower(translate(i.texto, 'áéíóúÁÉÍÓÚñÑüÜ', 'aeiouAEIOUnNuU')) ~ 'medidas|ubicacion|localidad|detalles del proyecto|detalles especificos|nombre|presupuesto estimado|tipos de obras|tipo de arreglo' then 'Pedir medidas y ubicación' when lower(translate(i.texto, 'áéíóúÁÉÍÓÚñÑüÜ', 'aeiouAEIOUnNuU')) ~ 'presupuesto|propuesta|cotizacion|simulacion' then 'Enviar presupuesto o propuesta' when lower(translate(i.texto, 'áéíóúÁÉÍÓÚñÑüÜ', 'aeiouAEIOUnNuU')) ~ 'seguimiento|cerrar|concretar|contacto|recordar|impulsar|decision|interes' then 'Hacer seguimiento para cerrar' when lower(translate(i.texto, 'áéíóúÁÉÍÓÚñÑüÜ', 'aeiouAEIOUnNuU')) ~ 'avance|certificado|documentacion|obra|inicio|cascada|cuadrilla|plano|contrato' then 'Seguir la obra en curso' else 'Otra' end as categoria from (select t.talk_id, a.created_at, case when coalesce(a.reservation_status,'') ilike '%confirm%' then 'Confirmada' when a.reservation_status='en_negociacion' then 'En negociacion' when a.reservation_status='sin_avance' then 'Sin avance' when a.reservation_status in ('perdida','cancelada') then 'Perdida' else 'Sin clasificar' end as estado, case jsonb_typeof(o) when 'object' then coalesce(o->>'action', o->>'recommendation', o->>'detail', o #>> '{}') else o #>> '{}' end as texto, o->>'priority' as prioridad from wa_latest_audits a join wa_talks t on t.talk_id=a.talk_id, jsonb_array_elements(coalesce(a.recommended_actions,'[]'::jsonb)) o where ('piscinas-vazquez' = '__all__' OR t.hotel_id = 'piscinas-vazquez') and coalesce((select min(m0.message_created_at) from wa_messages m0 where m0.talk_id=t.talk_id and m0.direction='incoming'), t.first_seen_at) between $__timeFrom() and $__timeTo() and coalesce(a.reservation_status,'') <> 'no_aplica' and coalesce(a.raw_ai_response->>'inquiry_type','') <> 'otro') i where nullif(trim(i.texto),'') is not null) cact\n) x order by talk_id desc, tipo, categoria",
+              "refId": "A"
+            }
+          ],
+          "title": "Lo que escribio la IA, por conversacion",
+          "type": "table"
+        }
+      ],
+      "title": "Detalle: lo que escribio la IA (texto completo)",
+      "type": "row"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 91
+      },
+      "id": 258,
+      "title": "Tiempos de respuesta durante la conversacion",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "bfz14hr25v6kgd"
+      },
+      "description": "Promedio de minutos de horario laboral de TODAS las respuestas de la conversacion, no solo la primera. Mide si el ritmo se sostiene despues del primer contacto. Se mide desde el PRIMER mensaje del cliente que quedo sin responder hasta la primera respuesta de una persona del equipo; las bienvenidas automaticas de Kommo no cuentan como respuesta. Se descartan los turnos donde el cliente solo dijo 'gracias', 'ok' o similar, y las conversaciones que la IA marca como no comerciales. Filtra por la fecha en que escribio el cliente dentro del periodo elegido arriba. Fuente: wa_response_turns (calculado de wa_messages, se actualiza cada 30 min). Horario laboral: lunes a viernes de 9 a 18 h y sabado de 10 a 15 h (hora de Argentina); domingos y feriados cargados en wa_holidays no cuentan.",
+      "fieldConfig": {
+        "defaults": {
+          "noValue": "Sin datos",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#0ca30c",
+                "value": null
+              },
+              {
+                "color": "#fab219",
+                "value": 30
+              },
+              {
+                "color": "#ec835a",
+                "value": 60
+              },
+              {
+                "color": "#d03b3b",
+                "value": 240
+              }
+            ]
+          },
+          "unit": "m"
+        }
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 0,
+        "y": 92
+      },
+      "id": 245,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "bfz14hr25v6kgd"
+          },
+          "format": "table",
+          "rawSql": "select round((avg(r.business_seconds) / 60.0)::numeric, 1) as v from wa_response_turns r left join wa_latest_audits a on a.talk_id = r.talk_id where ('piscinas-vazquez' = '__all__' OR r.hotel_id = 'piscinas-vazquez') and not r.trivial and r.asked_at between $__timeFrom() and $__timeTo() and coalesce(a.reservation_status,'') <> 'no_aplica' and coalesce(a.raw_ai_response->>'inquiry_type','') <> 'otro' and r.responded_at is not null and true",
+          "refId": "A"
+        }
+      ],
+      "title": "Respuesta en el chat (prom., habil)",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "bfz14hr25v6kgd"
+      },
+      "description": "La respuesta mas lenta del periodo (cualquier momento de la conversacion), en minutos de horario laboral. Se mide desde el PRIMER mensaje del cliente que quedo sin responder hasta la primera respuesta de una persona del equipo; las bienvenidas automaticas de Kommo no cuentan como respuesta. Se descartan los turnos donde el cliente solo dijo 'gracias', 'ok' o similar, y las conversaciones que la IA marca como no comerciales. Filtra por la fecha en que escribio el cliente dentro del periodo elegido arriba. Fuente: wa_response_turns (calculado de wa_messages, se actualiza cada 30 min). Horario laboral: lunes a viernes de 9 a 18 h y sabado de 10 a 15 h (hora de Argentina); domingos y feriados cargados en wa_holidays no cuentan.",
+      "fieldConfig": {
+        "defaults": {
+          "noValue": "Sin datos",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#0ca30c",
+                "value": null
+              },
+              {
+                "color": "#fab219",
+                "value": 30
+              },
+              {
+                "color": "#ec835a",
+                "value": 60
+              },
+              {
+                "color": "#d03b3b",
+                "value": 240
+              }
+            ]
+          },
+          "unit": "m"
+        }
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 12,
+        "y": 92
+      },
+      "id": 231,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "",
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "bfz14hr25v6kgd"
+          },
+          "format": "table",
+          "rawSql": "select round((max(r.business_seconds) / 60.0)::numeric, 1) as v from wa_response_turns r left join wa_latest_audits a on a.talk_id = r.talk_id where ('piscinas-vazquez' = '__all__' OR r.hotel_id = 'piscinas-vazquez') and not r.trivial and r.asked_at between $__timeFrom() and $__timeTo() and coalesce(a.reservation_status,'') <> 'no_aplica' and coalesce(a.raw_ai_response->>'inquiry_type','') <> 'otro' and r.responded_at is not null and true",
+          "refId": "A"
+        }
+      ],
+      "title": "Peor demora del chat (habil)",
+      "type": "stat"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 9
+      },
+      "id": 259,
+      "panels": [],
+      "title": "Tiempo de respuesta en horario laboral (L a V 9-18 h · Sab 10-15 h · umbral 30 min)",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "bfz14hr25v6kgd"
+      },
+      "description": "De cada vez que un cliente escribio y espero respuesta, que porcentaje fue respondido en 30 minutos de horario laboral o menos. Si escribio fuera de horario, el reloj arranca cuando abre el horario (ej. sabado 18 h contestado el lunes 9:10 = 10 min, porque el domingo no hay horario). Las que siguen sin respuesta y ya pasaron los 30 min cuentan como fuera de plazo. Se mide desde el PRIMER mensaje del cliente que quedo sin responder hasta la primera respuesta de una persona del equipo; las bienvenidas automaticas de Kommo no cuentan como respuesta. Se descartan los turnos donde el cliente solo dijo 'gracias', 'ok' o similar, y las conversaciones que la IA marca como no comerciales. Filtra por la fecha en que escribio el cliente dentro del periodo elegido arriba. Fuente: wa_response_turns (calculado de wa_messages, se actualiza cada 30 min). Horario laboral: lunes a viernes de 9 a 18 h y sabado de 10 a 15 h (hora de Argentina); domingos y feriados cargados en wa_holidays no cuentan.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "decimals": 0,
+          "max": 100,
+          "min": 0,
+          "noValue": "Sin datos",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#d03b3b",
+                "value": null
+              },
+              {
+                "color": "#ec835a",
+                "value": 60
+              },
+              {
+                "color": "#fab219",
+                "value": 75
+              },
+              {
+                "color": "#0ca30c",
+                "value": 90
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 6,
+        "x": 0,
+        "y": 10
+      },
+      "id": 260,
+      "options": {
+        "minVizHeight": 75,
+        "minVizWidth": 75,
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "sizing": "auto"
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "bfz14hr25v6kgd"
+          },
+          "format": "table",
+          "rawSql": "select round((100.0 * count(*) filter (where r.responded_at is not null and r.business_seconds <= r.sla_minutes * 60) / nullif(count(*) filter (where r.responded_at is not null or r.business_seconds > r.sla_minutes * 60), 0))::numeric, 1) as v from wa_response_turns r left join wa_latest_audits a on a.talk_id = r.talk_id where ('piscinas-vazquez' = '__all__' OR r.hotel_id = 'piscinas-vazquez') and not r.trivial and r.asked_at between $__timeFrom() and $__timeTo() and coalesce(a.reservation_status,'') <> 'no_aplica' and coalesce(a.raw_ai_response->>'inquiry_type','') <> 'otro'",
+          "refId": "A"
+        }
+      ],
+      "title": "Respondidas a tiempo (30 min habiles)",
+      "type": "gauge"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "bfz14hr25v6kgd"
+      },
+      "description": "Cuando el cliente escribe DENTRO del horario laboral, cuantos minutos tarda el equipo en contestar (mediana, todas las respuestas de la conversacion, no solo la primera). Se mide desde el PRIMER mensaje del cliente que quedo sin responder hasta la primera respuesta de una persona del equipo; las bienvenidas automaticas de Kommo no cuentan como respuesta. Se descartan los turnos donde el cliente solo dijo 'gracias', 'ok' o similar, y las conversaciones que la IA marca como no comerciales. Filtra por la fecha en que escribio el cliente dentro del periodo elegido arriba. Fuente: wa_response_turns (calculado de wa_messages, se actualiza cada 30 min). Horario laboral: lunes a viernes de 9 a 18 h y sabado de 10 a 15 h (hora de Argentina); domingos y feriados cargados en wa_holidays no cuentan.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "noValue": "Sin datos",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#0ca30c",
+                "value": null
+              },
+              {
+                "color": "#fab219",
+                "value": 30
+              },
+              {
+                "color": "#ec835a",
+                "value": 60
+              },
+              {
+                "color": "#d03b3b",
+                "value": 240
+              }
+            ]
+          },
+          "unit": "m"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 5,
+        "x": 6,
+        "y": 10
+      },
+      "id": 261,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "bfz14hr25v6kgd"
+          },
+          "format": "table",
+          "rawSql": "select round((percentile_cont(0.5) within group (order by r.business_seconds) / 60.0)::numeric, 1) as v from wa_response_turns r left join wa_latest_audits a on a.talk_id = r.talk_id where ('piscinas-vazquez' = '__all__' OR r.hotel_id = 'piscinas-vazquez') and not r.trivial and r.asked_at between $__timeFrom() and $__timeTo() and coalesce(a.reservation_status,'') <> 'no_aplica' and coalesce(a.raw_ai_response->>'inquiry_type','') <> 'otro' and r.responded_at is not null and r.asked_in_hours",
+          "refId": "A"
+        }
+      ],
+      "title": "Respuesta tipica en horario (min)",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "bfz14hr25v6kgd"
+      },
+      "description": "Cantidad de veces que el cliente espero mas de 30 minutos de horario laboral: respondidas tarde mas las que siguen sin respuesta y ya vencieron. Se mide desde el PRIMER mensaje del cliente que quedo sin responder hasta la primera respuesta de una persona del equipo; las bienvenidas automaticas de Kommo no cuentan como respuesta. Se descartan los turnos donde el cliente solo dijo 'gracias', 'ok' o similar, y las conversaciones que la IA marca como no comerciales. Filtra por la fecha en que escribio el cliente dentro del periodo elegido arriba. Fuente: wa_response_turns (calculado de wa_messages, se actualiza cada 30 min). Horario laboral: lunes a viernes de 9 a 18 h y sabado de 10 a 15 h (hora de Argentina); domingos y feriados cargados en wa_holidays no cuentan.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "noValue": "0",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#0ca30c",
+                "value": null
+              },
+              {
+                "color": "#fab219",
+                "value": 1
+              },
+              {
+                "color": "#d03b3b",
+                "value": 10
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 4,
+        "x": 11,
+        "y": 10
+      },
+      "id": 262,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "bfz14hr25v6kgd"
+          },
+          "format": "table",
+          "rawSql": "select count(*) as v from wa_response_turns r left join wa_latest_audits a on a.talk_id = r.talk_id where ('piscinas-vazquez' = '__all__' OR r.hotel_id = 'piscinas-vazquez') and not r.trivial and r.asked_at between $__timeFrom() and $__timeTo() and coalesce(a.reservation_status,'') <> 'no_aplica' and coalesce(a.raw_ai_response->>'inquiry_type','') <> 'otro' and r.business_seconds > r.sla_minutes * 60",
+          "refId": "A"
+        }
+      ],
+      "title": "Respondidas fuera de plazo",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "bfz14hr25v6kgd"
+      },
+      "description": "Veces que el cliente escribio y no tiene ninguna respuesta de una persona del equipo, con mas de 30 minutos de horario laboral transcurridos. Incluye casos viejos del periodo que nunca se contestaron. Se mide desde el PRIMER mensaje del cliente que quedo sin responder hasta la primera respuesta de una persona del equipo; las bienvenidas automaticas de Kommo no cuentan como respuesta. Se descartan los turnos donde el cliente solo dijo 'gracias', 'ok' o similar, y las conversaciones que la IA marca como no comerciales. Filtra por la fecha en que escribio el cliente dentro del periodo elegido arriba. Fuente: wa_response_turns (calculado de wa_messages, se actualiza cada 30 min). Horario laboral: lunes a viernes de 9 a 18 h y sabado de 10 a 15 h (hora de Argentina); domingos y feriados cargados en wa_holidays no cuentan.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "noValue": "0",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#0ca30c",
+                "value": null
+              },
+              {
+                "color": "#fab219",
+                "value": 1
+              },
+              {
+                "color": "#d03b3b",
+                "value": 5
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 4,
+        "x": 15,
+        "y": 10
+      },
+      "id": 263,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "bfz14hr25v6kgd"
+          },
+          "format": "table",
+          "rawSql": "select count(*) as v from wa_response_turns r left join wa_latest_audits a on a.talk_id = r.talk_id where ('piscinas-vazquez' = '__all__' OR r.hotel_id = 'piscinas-vazquez') and not r.trivial and r.asked_at between $__timeFrom() and $__timeTo() and coalesce(a.reservation_status,'') <> 'no_aplica' and coalesce(a.raw_ai_response->>'inquiry_type','') <> 'otro' and r.responded_at is null and r.business_seconds > r.sla_minutes * 60",
+          "refId": "A"
+        }
+      ],
+      "title": "Quedaron sin respuesta (vencidas)",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "bfz14hr25v6kgd"
+      },
+      "description": "Porcentaje de las veces que el cliente escribio fuera del horario laboral (de noche, domingos, sabado despues de las 15 h). No es una falta del equipo: muestra cuanta demanda llega cuando no hay atencion. Se mide desde el PRIMER mensaje del cliente que quedo sin responder hasta la primera respuesta de una persona del equipo; las bienvenidas automaticas de Kommo no cuentan como respuesta. Se descartan los turnos donde el cliente solo dijo 'gracias', 'ok' o similar, y las conversaciones que la IA marca como no comerciales. Filtra por la fecha en que escribio el cliente dentro del periodo elegido arriba. Fuente: wa_response_turns (calculado de wa_messages, se actualiza cada 30 min). Horario laboral: lunes a viernes de 9 a 18 h y sabado de 10 a 15 h (hora de Argentina); domingos y feriados cargados en wa_holidays no cuentan.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "decimals": 0,
+          "noValue": "Sin datos",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#5794f2",
+                "value": null
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 5,
+        "x": 19,
+        "y": 10
+      },
+      "id": 264,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "bfz14hr25v6kgd"
+          },
+          "format": "table",
+          "rawSql": "select round((100.0 * count(*) filter (where not r.asked_in_hours) / nullif(count(*), 0))::numeric, 1) as v from wa_response_turns r left join wa_latest_audits a on a.talk_id = r.talk_id where ('piscinas-vazquez' = '__all__' OR r.hotel_id = 'piscinas-vazquez') and not r.trivial and r.asked_at between $__timeFrom() and $__timeTo() and coalesce(a.reservation_status,'') <> 'no_aplica' and coalesce(a.raw_ai_response->>'inquiry_type','') <> 'otro'",
+          "refId": "A"
+        }
+      ],
+      "title": "Escriben fuera de horario",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "bfz14hr25v6kgd"
+      },
+      "description": "Porcentaje respondido dentro de los 30 minutos habiles segun el dia en que escribio el cliente. Sirve para ver que dia el equipo se atrasa. El domingo no tiene horario: lo que llega ese dia se cuenta desde el lunes 9 h. Se mide desde el PRIMER mensaje del cliente que quedo sin responder hasta la primera respuesta de una persona del equipo; las bienvenidas automaticas de Kommo no cuentan como respuesta. Se descartan los turnos donde el cliente solo dijo 'gracias', 'ok' o similar, y las conversaciones que la IA marca como no comerciales. Filtra por la fecha en que escribio el cliente dentro del periodo elegido arriba. Fuente: wa_response_turns (calculado de wa_messages, se actualiza cada 30 min). Horario laboral: lunes a viernes de 9 a 18 h y sabado de 10 a 15 h (hora de Argentina); domingos y feriados cargados en wa_holidays no cuentan.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "axisSoftMin": 0,
+            "fillOpacity": 85,
+            "lineWidth": 0
+          },
+          "decimals": 0,
+          "max": 100,
+          "min": 0,
+          "noValue": "Sin datos",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#d03b3b",
+                "value": null
+              },
+              {
+                "color": "#ec835a",
+                "value": 60
+              },
+              {
+                "color": "#fab219",
+                "value": 75
+              },
+              {
+                "color": "#0ca30c",
+                "value": 90
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 8,
+        "x": 0,
+        "y": 18
+      },
+      "id": 265,
+      "options": {
+        "barWidth": 0.7,
+        "colorByField": "% a tiempo",
+        "groupWidth": 0.7,
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "orientation": "horizontal",
+        "showValue": "always",
+        "stacking": "none",
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        },
+        "xTickLabelRotation": 0
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "bfz14hr25v6kgd"
+          },
+          "format": "table",
+          "rawSql": "select substr(d, 3) as \"Dia\", round((100.0 * count(*) filter (where r.responded_at is not null and r.business_seconds <= r.sla_minutes * 60) / nullif(count(*) filter (where r.responded_at is not null or r.business_seconds > r.sla_minutes * 60), 0))::numeric, 1) as \"% a tiempo\" from (select case extract(isodow from r.asked_at at time zone 'America/Argentina/Buenos_Aires')::int when 1 then '1 Lun' when 2 then '2 Mar' when 3 then '3 Mie' when 4 then '4 Jue' when 5 then '5 Vie' when 6 then '6 Sab' else '7 Dom' end as d, r.* from wa_response_turns r left join wa_latest_audits a on a.talk_id = r.talk_id where ('piscinas-vazquez' = '__all__' OR r.hotel_id = 'piscinas-vazquez') and not r.trivial and r.asked_at between $__timeFrom() and $__timeTo() and coalesce(a.reservation_status,'') <> 'no_aplica' and coalesce(a.raw_ai_response->>'inquiry_type','') <> 'otro') r group by d order by d",
+          "refId": "A"
+        }
+      ],
+      "title": "A tiempo segun el dia en que escribio el cliente",
+      "type": "barchart"
+    },
+    {
+      "datasource": {
+        "type": "postgres",
+        "uid": "bfz14hr25v6kgd"
+      },
+      "description": "Las 20 esperas mas largas en horario laboral (respondidas tarde o todavia sin respuesta). 'Demora habil' es el tiempo que conto dentro del horario; 'Demora total' es el tiempo corrido de reloj. Se mide desde el PRIMER mensaje del cliente que quedo sin responder hasta la primera respuesta de una persona del equipo; las bienvenidas automaticas de Kommo no cuentan como respuesta. Se descartan los turnos donde el cliente solo dijo 'gracias', 'ok' o similar, y las conversaciones que la IA marca como no comerciales. Filtra por la fecha en que escribio el cliente dentro del periodo elegido arriba. Fuente: wa_response_turns (calculado de wa_messages, se actualiza cada 30 min). Horario laboral: lunes a viernes de 9 a 18 h y sabado de 10 a 15 h (hora de Argentina); domingos y feriados cargados en wa_holidays no cuentan.",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "filterable": false
+          },
+          "noValue": "Ninguna espera fuera de plazo en el periodo"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Demora habil (min)"
+            },
+            "properties": [
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "mode": "basic",
+                  "type": "color-background"
+                }
+              },
+              {
+                "id": "color",
+                "value": {
+                  "mode": "thresholds"
+                }
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "#0ca30c",
+                      "value": null
+                    },
+                    {
+                      "color": "#fab219",
+                      "value": 30
+                    },
+                    {
+                      "color": "#ec835a",
+                      "value": 60
+                    },
+                    {
+                      "color": "#d03b3b",
+                      "value": 240
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "custom.width",
+                "value": 150
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Respondieron"
+            },
+            "properties": [
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "options": {
+                      "Sin respuesta": {
+                        "color": "#d03b3b",
+                        "index": 0
+                      }
+                    },
+                    "type": "value"
+                  }
+                ]
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "color-text"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 16,
+        "x": 8,
+        "y": 18
+      },
+      "id": 266,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "show": false
+        },
+        "showHeader": true
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "postgres",
+            "uid": "bfz14hr25v6kgd"
+          },
+          "format": "table",
+          "rawSql": "select 'Conv. ' || r.talk_id as \"Conversacion\", (case extract(isodow from r.asked_at at time zone 'America/Argentina/Buenos_Aires')::int when 1 then 'Lun' when 2 then 'Mar' when 3 then 'Mie' when 4 then 'Jue' when 5 then 'Vie' when 6 then 'Sab' else 'Dom' end || ' ' || to_char(r.asked_at at time zone 'America/Argentina/Buenos_Aires', 'DD/MM HH24:MI')) as \"Cliente escribio\", coalesce((case extract(isodow from r.responded_at at time zone 'America/Argentina/Buenos_Aires')::int when 1 then 'Lun' when 2 then 'Mar' when 3 then 'Mie' when 4 then 'Jue' when 5 then 'Vie' when 6 then 'Sab' else 'Dom' end || ' ' || to_char(r.responded_at at time zone 'America/Argentina/Buenos_Aires', 'DD/MM HH24:MI')), 'Sin respuesta') as \"Respondieron\", round((r.business_seconds / 60.0)::numeric, 0) as \"Demora habil (min)\", round((r.wall_seconds / 3600.0)::numeric, 1) as \"Demora total (h)\" from wa_response_turns r left join wa_latest_audits a on a.talk_id = r.talk_id where ('piscinas-vazquez' = '__all__' OR r.hotel_id = 'piscinas-vazquez') and not r.trivial and r.asked_at between $__timeFrom() and $__timeTo() and coalesce(a.reservation_status,'') <> 'no_aplica' and coalesce(a.raw_ai_response->>'inquiry_type','') <> 'otro' and r.business_seconds > r.sla_minutes * 60 order by r.business_seconds desc limit 20",
+          "refId": "A"
+        }
+      ],
+      "title": "Peores esperas en horario laboral",
+      "type": "table"
+    }
+  ],
+  "preload": false,
+  "refresh": "5m",
+  "schemaVersion": 42,
+  "tags": [
+    "kuro",
+    "whatsapp",
+    "piscinas-vazquez",
+    "gestion"
+  ],
+  "templating": {
+    "list": [
+      {
+        "allowCustomValue": true,
+        "current": {
+          "text": "piscinas-vazquez",
+          "value": "piscinas-vazquez"
+        },
+        "hide": 2,
+        "includeAll": false,
+        "label": "Cliente",
+        "multi": false,
+        "name": "hotel_id",
+        "options": [
+          {
+            "selected": true,
+            "text": "piscinas-vazquez",
+            "value": "piscinas-vazquez"
+          }
+        ],
+        "query": "piscinas-vazquez",
+        "skipUrlSync": false,
+        "type": "custom"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-90d",
+    "to": "now"
+  },
+  "timepicker": {
+    "refresh_intervals": [
+      "5s",
+      "10s",
+      "30s",
+      "1m",
+      "5m",
+      "15m",
+      "30m",
+      "1h",
+      "2h",
+      "1d"
+    ]
+  },
+  "timezone": "America/Argentina/Cordoba",
+  "title": "Kuro - Gestion y Conversion - Piscinas Vazquez",
+  "uid": "kuro-wa-gestion-piscinas-vazquez",
+  "version": 22
+}
